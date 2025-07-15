@@ -16,3 +16,24 @@ CREATE TABLE amr_genotype (
 copy amr_genotype from 'amr_genotype.csv';
 
 COPY amr_genotype to 'amr_genotype.parquet' (FORMAT parquet, COMPRESSION zstd);
+
+-- Now for the METT data parse
+CREATE TABLE mett_amr (
+    genome VARCHAR,
+    region VARCHAR,
+    region_start INTEGER,
+    region_end INTEGER,
+    strand INTEGER,
+    id VARCHAR,
+    gene_symbol VARCHAR,
+    amr_gene_symbol VARCHAR,
+    element_type VARCHAR,
+    element_subtype VARCHAR,
+    drug_class VARCHAR,
+    drug_subclas VARCHAR
+);
+
+copy mett_amr from 'mett.amr.csv';
+
+COPY mett_amr to 'mett_amr.parquet' (FORMAT parquet, COMPRESSION zstd);
+
