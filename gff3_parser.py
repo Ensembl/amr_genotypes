@@ -35,22 +35,48 @@ conversion_field_names = {
 
 
 def process_dir(dir, output, gff_type="CDS"):
+    """
+    Process all *.gff files in a given directory
+    """
     files = list(pathlib.Path().glob(os.path.join(dir, "*.gff")))
     for f in files:
-        genome = (
-            os.path.basename(f)
-            .replace("_annotations.gff", "")
-            .replace("_amrfinderplus.gff", "")
-            .replace(".gff", "")
+        process_file(f, output, gff_type=gff_type)
+
+
+def process_files(files, output, gff_type="CDS"):
+    """
+    For each line in a file, process each file as a possible GFF target
+    """
+    with open(files) as handle:
+        for f in handle:
+            if f:
+                if f.startswith("#"):
+                    continue
+                process_file(f.strip(), output, gff_type=gff_type)
+
+
+def process_file(file_path, output, gff_type="CDS"):
+    """
+    Take a path to a GFF file and process
+    """
+    genome = (
+        os.path.basename(file_path)
+        .replace("_annotations.gff", "")
+        .replace("_amrfinderplus.gff", "")
+        .replace(".gff", "")
+    )
+    with open(file_path, "rt") as handle:
+        processed_output = process_gff_handle(
+            handle=handle, genome=genome, gff_type=gff_type
         )
-        with open(f, "rt") as handle:
-            processed_output = process_file(
-                handle=handle, genome=genome, gff_type=gff_type
-            )
-            output.extend(processed_output)
+        output.extend(processed_output)
 
 
 def process_urls(urls, output, gff_type="CDS"):
+    """
+    For a file which is a set of urls, iterate and parse targets
+    as GFF
+    """
     # Open a session and keep it open
     session = requests.Session()
     retries = Retry(
@@ -80,11 +106,11 @@ def process_single_url_gff(url: str, session, output, gff_type="CDS"):
     )
     r = session.get(url.strip(), allow_redirects=True, verify=True, timeout=10)
     with StringIO(r.text) as handle:
-        processed_output = process_file(handle, genome=genome, gff_type=gff_type)
+        processed_output = process_gff_handle(handle, genome=genome, gff_type=gff_type)
         output.extend(processed_output)
 
 
-def process_file(handle, genome, gff_type="CDS"):
+def process_gff_handle(handle, genome, gff_type="CDS"):
     output = []
     for rec in GFF.parse(handle, limit_info={"gff_type": [gff_type]}):
         for feature in rec.features:
@@ -120,7 +146,11 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument(
         "--dir",
-        help="Provide the directory to look for GFFs in. If you do not use this then use --urls",
+        help="Provide the directory to look for GFFs in. If you do not use this then use --urls or --files",
+    )
+    parser.add_argument(
+        "--files",
+        help="Provide a file of file paths. Assumes 1 file path per line and will be a GFF3 formatted file",
     )
     parser.add_argument(
         "--urls",
@@ -141,5 +171,7 @@ if __name__ == "__main__":
         process_dir(args.dir, output, gff_type=args.gff_type)
     elif args.urls:
         process_urls(args.urls, output, gff_type=args.gff_type)
+    elif args.files:
+        process_files(args.files, output, gff_type=args.gff_type)
 
     write_csv(output_file=args.output, output=output)
