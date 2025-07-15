@@ -1,0 +1,9 @@
+https://ftp.ebi.ac.uk/pub/databases/metagenomics/mgnify_genomes/sheep-rumen/v1.0/species_catalogue/MGYG0003044/MGYG000304456/genome/MGYG000304456.gff
+https://ftp.ebi.ac.uk/pub/databases/metagenomics/mgnify_genomes/sheep-rumen/v1.0/species_catalogue/MGYG0003044/MGYG000304456/genome/MGYG000304456_amrfinderplus.tsv
+https://ftp.ebi.ac.uk/pub/databases/mett/annotations/v1_2024-04-15/BU_CCUG35501/functional_annotation/merged_gff/BU_CCUG35501_annotations.gff
+https://ftp.ebi.ac.uk/pub/databases/mett/annotations/v1_2024-04-15/BU_CCUG35501/antimicrobial_resistance/amrfinder_plus/BU_CCUG35501_amrfinderplus.tsv
+https://ftp.ebi.ac.uk/pub/databases/mett/annotations/v1_2024-04-15/PV_TC-4835B/functional_annotation/merged_gff/PV_TC-4835B_annotations.gff
+https://ftp.ebi.ac.uk/pub/databases/mett/annotations/v1_2024-04-15/PV_TC-4835B/antimicrobial_resistance/amrfinder_plus/PV_TC-4835B_amrfinderplus.tsv
+https://ftp.ebi.ac.uk/pub/databases/mett/annotations/v1_2024-04-15/PV_WCA-389-WT-3C/functional_annotation/merged_gff/PV_WCA-389-WT-3C_annotations.gff
+https://ftp.ebi.ac.uk/pub/databases/mett/annotations/v1_2024-04-15/PV_WCA-389-WT-3C/antimicrobial_resistance/amrfinder_plus/PV_WCA-389-WT-3C_amrfinderplus.tsv
+

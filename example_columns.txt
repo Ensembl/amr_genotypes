@@ -1,0 +1,147 @@
+####
+
+# GFF3
+
+contig_1	Prodigal:002006	gene	1620276	1621076	.	-	0
+
+# Column 9
+ID=PV_TC-4835B_01344
+eC_number=2.1.1.-
+Name=ermD
+gene=ermD
+inference=ab initio prediction:Prodigal:002006,similar to AA sequence:UniProtKB:Q03986
+locus_tag=PV_TC-4835B_01344
+product=rRNA adenine N-6-methyltransferase
+product_source=Prokka
+eggNOG=457424.BFAG_04833
+cog=J
+kegg=ko:K00561
+pfam=PF00398
+interpro=IPR001737,IPR020598,IPR023165,IPR029063
+amrfinderplus_gene_symbol=erm(F)
+amrfinderplus_sequence_name=23S rRNA (adenine(2058)-N(6))-methyltransferase Erm(F)
+amrfinderplus_scope=core
+element_type=AMR
+element_subtype=AMR
+drug_class=MACROLIDE
+drug_subclass=MACROLIDE
+uf_keyword=RNA-binding,Methyltransferase,S-adenosyl-L-methionine
+mge_id=PV_TC-4835B|contig_1:1592981-1896960
+mge_types=phage,insertion_sequence,conjugative_element
+
+# TSV
+
+Protein identifier	 Contig id	 Start  	 Stop   	 Strand	 Gene symbol	 Sequence name                                         	 
+PV_TC-4835B_01344 	 contig_1 	 1620276	 1621076	 -     	 erm(F)     	 23S rRNA (adenine(2058)-N(6))-methyltransferase Erm(F)	 
+
+Scope	 Element type	 Element subtype	 Class      	 Subclass   	 Method	 Target length	 Reference sequence length	 
+core 	 AMR         	 AMR            	 MACROLIDE  	 MACROLIDE  	 EXACTP	           266	                       266	 
+
+% Coverage of reference sequence	 % Identity to reference sequence	 Alignment length	 Accession of closest sequence	 
+                          100.00	                           100.00	              266	 WP_002682030.1               	 
+
+Name of closest sequence                              	 HMM id    	 
+23S rRNA (adenine(2058)-N(6))-methyltransferase Erm(F)	 NF012223.0	 
+
+HMM description
+23S rRNA (adenine(2058)-N(6))-methyltransferase Erm(F)
+
+####
+
+# GFF3
+contig_1	Prodigal:002006	gene	2706065	2707024	.	-	0
+
+# Column 9
+
+ID=PV_TC-4835B_02356
+eC_number=3.5.2.6
+Name=per1
+gene=per1
+inference=ab initio prediction:Prodigal:002006,similar to AA sequence:UniProtKB:P37321
+locus_tag=PV_TC-4835B_02356
+product=Extended-spectrum beta-lactamase PER-1
+product_source=Prokka
+eggNOG=1121098.HMPREF1534_01244
+cog=V
+kegg=ko:K17836
+pfam=PF13354
+interpro=IPR000871,IPR012338,IPR045155
+amrfinderplus_gene_symbol=bla
+amrfinderplus_sequence_name=class A beta-lactamase, subclass A2
+amrfinderplus_scope=core
+element_type=AMR
+element_subtype=AMR
+drug_class=BETA-LACTAM
+drug_subclass=BETA-LACTAM
+uf_keyword=Antibiotic resistance
+uf_prot_rec_ecnumber=3.5.2.6
+mge_id=PV_TC-4835B|contig_1:2701113-2707024
+mge_types=insertion_sequence
+
+# TSV
+Protein identifier	 Contig id	 Start  	 Stop   	 Strand	 Gene symbol	 
+PV_TC-4835B_02356 	 contig_1 	 2706065	 2707024	 -     	 bla        	 
+
+Sequence name                                         	 Scope	 Element type	 Element subtype	 
+class A beta-lactamase, subclass A2                   	 core 	 AMR         	 AMR            	 
+
+Class      	 Subclass   	 Method	 Target length	 Reference sequence length	 
+BETA-LACTAM	 BETA-LACTAM	 HMM   	           319	                       300	 
+
+% Coverage of reference sequence	 % Identity to reference sequence	 Alignment length	 
+                           89.33	                            53.73	              268	 
+
+Accession of closest sequence	 Name of closest sequence                              	 HMM id    	 
+WP_032579291.1               	 class A beta-lactamase, subclass A2                   	 NF012099.1	 
+
+HMM description
+class A beta-lactamase, subclass A2
+
+####
+
+# GFF3
+
+contig_1	Prodigal:002006	gene	3641165	3641491	.	+	0
+
+# Column 9
+
+ID=PV_TC-4835B_03196
+Name=arsD
+gene=arsD
+inference=ab initio prediction:Prodigal:002006,similar to AA sequence:UniProtKB:P46003
+locus_tag=PV_TC-4835B_03196
+product=Arsenical resistance operon trans-acting repressor ArsD
+product_source=Prokka
+eggNOG=435590.BVU_4185
+cog=S
+pfam=PF06953
+interpro=IPR010712
+amrfinderplus_gene_symbol=arsD
+amrfinderplus_sequence_name=arsenite efflux transporter metallochaperone ArsD
+amrfinderplus_scope=plus
+element_type=STRESS
+element_subtype=METAL
+drug_class=ARSENIC
+drug_subclass=ARSENITE
+
+# TSV
+
+Protein identifier	 Contig id	 Start  	 Stop   	 Strand	 Gene symbol	 
+PV_TC-4835B_03196 	 contig_1 	 3641165	 3641491	 +     	 arsD       	 
+
+Sequence name                                         	 Scope	 Element type	 Element subtype	 
+arsenite efflux transporter metallochaperone ArsD     	 plus 	 STRESS      	 METAL          	 
+
+Class      	 Subclass   	 Method	 Target length	 Reference sequence length	 
+ARSENIC    	 ARSENITE   	 HMM   	           108	                       121	 
+
+% Coverage of reference sequence	 % Identity to reference sequence	 Alignment length	 
+                           83.47	                            43.69	              103	 
+
+Accession of closest sequence	 Name of closest sequence                              	 HMM id    	 
+KAA9473342.1                 	 arsenite efflux transporter metallochaperone ArsD     	 NF033727.1	 
+
+HMM description
+arsenite efflux transporter metallochaperone ArsD
+
+####
