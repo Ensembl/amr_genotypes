@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 import csv
 import pathlib
 import os
@@ -9,6 +10,7 @@ from requests.adapters import HTTPAdapter
 from BCBio import GFF
 from argparse import ArgumentParser
 from io import StringIO
+from typing import List, TextIO
 
 gff_type = "CDS"
 qualifier_columns = [
@@ -34,7 +36,7 @@ conversion_field_names = {
 }
 
 
-def process_dir(dir, output, gff_type="CDS"):
+def process_dir(dir: str, output: List[dict], gff_type="CDS"):
     """
     Process all *.gff files in a given directory
     """
@@ -43,7 +45,7 @@ def process_dir(dir, output, gff_type="CDS"):
         process_file(f, output, gff_type=gff_type)
 
 
-def process_files(files, output, gff_type="CDS"):
+def process_files(files: str, output: List[dict], gff_type: str = "CDS") -> None:
     """
     For each line in a file, process each file as a possible GFF target
     """
@@ -55,7 +57,7 @@ def process_files(files, output, gff_type="CDS"):
                 process_file(f.strip(), output, gff_type=gff_type)
 
 
-def process_file(file_path, output, gff_type="CDS"):
+def process_file(file_path, output: List[dict], gff_type: str = "CDS") -> None:
     """
     Take a path to a GFF file and process
     """
@@ -72,7 +74,7 @@ def process_file(file_path, output, gff_type="CDS"):
         output.extend(processed_output)
 
 
-def process_urls(urls, output, gff_type="CDS"):
+def process_urls(urls: str, output: List[dict], gff_type: str = "CDS"):
     """
     For a file which is a set of urls, iterate and parse targets
     as GFF
@@ -97,7 +99,9 @@ def process_urls(urls, output, gff_type="CDS"):
                 process_single_url_gff(strip, session, output, gff_type=gff_type)
 
 
-def process_single_url_gff(url: str, session, output, gff_type="CDS"):
+def process_single_url_gff(
+    url: str, session, output: List[dict], gff_type: str = "CDS"
+):
     genome = (
         url.split("/")[-1]
         .replace("_annotations.gff", "")
@@ -110,7 +114,7 @@ def process_single_url_gff(url: str, session, output, gff_type="CDS"):
         output.extend(processed_output)
 
 
-def process_gff_handle(handle, genome, gff_type="CDS"):
+def process_gff_handle(handle: TextIO, genome: str, gff_type: str = "CDS"):
     output = []
     for rec in GFF.parse(handle, limit_info={"gff_type": [gff_type]}):
         for feature in rec.features:
@@ -135,7 +139,7 @@ def process_gff_handle(handle, genome, gff_type="CDS"):
     return output
 
 
-def write_csv(output_file, output):
+def write_csv(output_file: str, output: List[dict]):
     with open(output_file, "wt") as out:
         writer = csv.DictWriter(out, fieldnames=output_fieldnames)
         writer.writeheader()
@@ -147,22 +151,26 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dir",
         help="Provide the directory to look for GFFs in. If you do not use this then use --urls or --files",
+        type=str
     )
     parser.add_argument(
         "--files",
         help="Provide a file of file paths. Assumes 1 file path per line and will be a GFF3 formatted file",
+        type=str
     )
     parser.add_argument(
         "--urls",
         help="Provide a file of URLs. Assumes 1 URL per line and will be a GFF3 formatted file",
+        type=str
     )
     parser.add_argument(
-        "--output", default="amr_genotype.csv", help="Location to write output to"
+        "--output", default="amr_genotype.csv", help="Location to write output to", type=str
     )
     parser.add_argument(
         "--gff_type",
         default="CDS",
         help="GFF object type to use to find AMR annotation",
+        type=str
     )
     args = parser.parse_args()
 
