@@ -13,3 +13,4 @@ tmp
 log.conf
 .hypothesis
 venv/
+/.vscode
