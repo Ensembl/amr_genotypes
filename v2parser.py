@@ -14,6 +14,7 @@ from functools import lru_cache
 import re
 import logging
 import pandas as pd
+import time
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("v2parser")
@@ -54,8 +55,8 @@ conversion_field_names = {
     "gene_symbol": "Name",
     "amr_element_symbol": "amrfinderplus_element_symbol",
     "amr_element_name": "amrfinderplus_element_name",
-    "class" : "drug_class",
-    "subclass" : "drug_subclass",
+    "class": "drug_class",
+    "subclass": "drug_subclass",
 }
 
 gca_fields = ["taxon_id", "genus", "scientific_name", "organism_name", "strain"]
@@ -71,7 +72,7 @@ def process_dir(
     """
     Process all *.gff files in a given directory
     """
-    files = list(pathlib.Path().glob(os.path.join(dir, "*.gff")))
+    files = pathlib.Path(dir).glob("*.gff")
     for f in files:
         process_file(
             f, output, gff_type=gff_type, amrfinder_plus_filter=amrfinder_plus_filter
@@ -143,14 +144,15 @@ def process_file(
                 else:
                     record[col] = ""
 
-            amrfinder = amr_records[feature.id]
+            amrfinder = amr_records[feature.id] if feature.id in amr_records else {}
 
             if "HMM_accession" in amrfinder and amrfinder["HMM_accession"] != "NA":
                 record["evidence_accession"] = amrfinder["HMM_accession"]
                 record["evidence_type"] = "HMM"
                 # Link needs to have version removed and trailing slash added
                 record["evidence_link"] = (
-                    f"https://www.ncbi.nlm.nih.gov/genome/annotation_prok/evidence/{re.sub(r"\.\d+$", "/", amrfinder['HMM_accession'])}"
+                    f"https://www.ncbi.nlm.nih.gov/genome/annotation_prok/evidence/"
+                    f"{re.sub(r'\.\d+$', '/', amrfinder['HMM_accession'])}"
                 )
                 record["evidence_description"] = amrfinder["HMM_description"]
 
@@ -164,7 +166,7 @@ def process_file(
                 for compound in compounds:
                     new_record = copy.deepcopy(record)
                     if amrfinder.get("Subclass") != "NA":
-                        compound = convert_antibiotic_to_aro_compound(compound)
+                        compound = convert_antibiotic(compound)
                         new_record["antibioticName"] = compound.get("label")
                         new_record["antibioticOntology"] = compound.get("short_form")
                         new_record["antibiotic_ontology_link"] = compound.get(
@@ -180,8 +182,9 @@ def process_file(
 
 @lru_cache(maxsize=None)
 def gca_summary(gca: str) -> Dict[str, str]:
-    req = requests.get(f"https://www.ebi.ac.uk/ena/browser/api/xml/{gca}")
-    req.raise_for_status()
+    req = _safe_get(f"https://www.ebi.ac.uk/ena/browser/api/xml/{gca}")
+    if not req:
+        return {}
     tree = ElementTree.fromstring(req.content)
     assembly = tree.find(".//ASSEMBLY")
     taxon = tree.find(".//TAXON")
@@ -235,30 +238,25 @@ def find_amrfinderplus_tsv(file_path: str):
     return files.pop() if files else None
 
 
+@lru_cache(maxsize=None)
+def convert_antibiotic(antibiotic: str) -> Optional[dict]:
+    mapping = {
+        "aro": "http://purl.obolibrary.org/obo/ARO_1000003",
+        "chebi": "http://purl.obolibrary.org/obo/CHEBI_33281",
+    }
+    for ontology in ("aro", "chebi"):
+        term = _search_ols(antibiotic, ontology, mapping[ontology])
+        if term:
+            return term
+    log.warning(f"No ontology match for antibiotic {antibiotic}")
+    return None
+
+
 ols_url = "https://www.ebi.ac.uk/ols4/api/search"
-ontology = "aro"
-iri_aro_coumpound = "http://purl.obolibrary.org/obo/ARO_1000003"
-chebi_antimicrobial_agent = "http://purl.obolibrary.org/obo/CHEBI_33281"
-
-
-@lru_cache(maxsize=None)
-def convert_antibiotic_to_ontology(antibiotic: str) -> Optional[dict]:
-    return _search_ols(antibiotic, "aro", iri_aro_coumpound) or _search_ols(
-        antibiotic, "chebi", chebi_antimicrobial_agent
-    )
-
-
-def convert_antibiotic_to_aro_compound(antibiotic: str) -> Optional[dict]:
-    return _search_ols(antibiotic, "aro", iri_aro_coumpound)
-
-
-@lru_cache(maxsize=None)
-def convert_antibiotic_to_chebi(antibiotic: str) -> Optional[dict]:
-    return _search_ols(antibiotic, "chebi", chebi_antimicrobial_agent)
 
 
 def _search_ols(antibiotic: str, ontology: str, children_of: str) -> Optional[dict]:
-    req = requests.get(
+    req = _safe_get(
         ols_url,
         params={
             "q": antibiotic,
@@ -266,7 +264,6 @@ def _search_ols(antibiotic: str, ontology: str, children_of: str) -> Optional[di
             "allChildrenOf": children_of,
         },
     )
-    req.raise_for_status()
     results = req.json().get("response", {}).get("docs", [])
     for r in results:
         res = {
@@ -279,6 +276,19 @@ def _search_ols(antibiotic: str, ontology: str, children_of: str) -> Optional[di
         url = f"https://www.ebi.ac.uk/ols4/ontologies/{ontology}/classes/{urllib.parse.quote_plus(r['iri'])}"
         res["ontology_link"] = url
         return res
+    return None
+
+
+def _safe_get(url, params=None, retries=3, timeout=10):
+    for i in range(retries):
+        try:
+            r = requests.get(url, params=params, timeout=timeout)
+            r.raise_for_status()
+            return r
+        except requests.RequestException as e:
+            log.warning(f"Request failed ({e}); retrying {i+1}/{retries}")
+            time.sleep(2 * i)
+    log.error(f"Failed after {retries} retries for {url}")
     return None
 
 
