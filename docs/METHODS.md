@@ -21,7 +21,7 @@ Genomes from the Comprehensive Assessment of Bacterial-Based AMR prediction from
 
 ### Annotation using mettannotator
 
-[mettannotator][mettannotator] is a bioinformatics pipeline that generates an exhaustive annotation of prokaryotic genomes using existing tools. The output is a GFF file that integrates the results of all pipeline components. Results of each individual tool are also provided. Version `3.12.8` of [AMRFinder[AMRFinderPlus]] was used alongside database version `3.12 2024-01-31.1`. Version `2023.4` of [UniFire][UniFire] was used. [v1.4.0 of mettannotator][mettannotatortag] was used by this protal.
+[mettannotator][mettannotator] is a bioinformatics pipeline that generates an exhaustive annotation of prokaryotic genomes using existing tools. The output is a GFF file that integrates the results of all pipeline components. Results of each individual tool are also provided. Version `3.12.8` of [AMRFinder][AMRFinderPlus] was used alongside database version `3.12 2024-01-31.1`. Version `2023.4` of [UniFire][UniFire] was used. [v1.4.0 of mettannotator][mettannotatortag] was used by this protal.
 
 ### Parsing of results
 
