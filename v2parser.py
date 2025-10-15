@@ -72,7 +72,7 @@ def process_dir(
     """
     Process all *.gff files in a given directory
     """
-    files = pathlib.Path(dir).glob("*.gff")
+    files = sorted(pathlib.Path(dir).glob("*.gff"))
     for f in files:
         process_file(
             f, output, gff_type=gff_type, amrfinder_plus_filter=amrfinder_plus_filter
