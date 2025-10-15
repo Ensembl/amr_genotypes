@@ -52,14 +52,29 @@ class Lookup:
             'Assembly_ID', 'taxon_id', 'scientific_name', 'genus', 'strain', and 'Biosample_ID'.
             If the id is not found an empty dictionary is returned.
         """
-        if not assembly_id.startswith("GCA"):
-            raise ValueError(
-                "Only GCA accessions are supported at this point. You provided {assembly_id}. Code will require checking for ERZ accessions and similar."
-            )
         req = self._safe_get(f"https://www.ebi.ac.uk/ena/browser/api/xml/{assembly_id}")
         if not req:
             return {}
-        tree = ElementTree.fromstring(req.content)
+        return self.parse_assembly_xml(assembly_id, req.text)
+    
+    def parse_assembly_xml(self, assembly_id, content: str) -> Dict[str, any]:
+        """Parses the XML content from the ENA assembly API and returns a summary dictionary
+
+        Args:
+            content (str): XML content from ENA assembly API
+
+        Returns:
+            Dict[str, any]: A dictionary including information including
+            'Assembly_ID', 'taxon_id', 'scientific_name', 'genus', 'strain', and 'Biosample_ID'.
+            If the id is not found an empty dictionary is returned.
+        """
+        tree = ElementTree.fromstring(content)
+        if assembly_id.startswith("GCA"):
+            return self._parse_gca(tree)
+        elif assembly_id.startswith("ERZ"):
+            return self._parse_erz(tree)
+    
+    def _parse_gca(self, tree: ElementTree) -> Dict[str, any]:
         assembly = tree.find(".//ASSEMBLY")
         taxon = tree.find(".//TAXON")
         scientific_name = taxon.findtext("SCIENTIFIC_NAME")
@@ -69,6 +84,31 @@ class Lookup:
         biosample = tree.findtext(".//SAMPLE_REF/IDENTIFIERS/PRIMARY_ID")
         return {
             "assembly_ID": assembly.get("accession"),
+            "taxon_id": taxon_id,
+            "scientific_name": scientific_name,
+            "organism_name": scientific_name,
+            "genus": genus,
+            "strain": strain,
+            "BioSample_ID": biosample,
+        }
+    
+    def _parse_erz(self, tree: ElementTree) -> Dict[str, any]:
+        analysis = tree.find(".//ANALYSIS")
+        assembly_ID = analysis.get("accession").strip()
+        for ext_id in tree.findall(".//EXTERNAL_ID"):
+            if ext_id.attrib.get("namespace") == "BioSample":
+                biosample = ext_id.text
+                break
+        else:
+            raise ValueError(f"No BioSample found for ERZ accession {assembly_ID}")
+        
+        biosample_obj = self._safe_get(f"https://www.ebi.ac.uk/biosamples/samples/{biosample}.json").json()
+        scientific_name = biosample_obj["characteristics"]["organism"][0]["text"]
+        genus = scientific_name.split(" ")[0] if scientific_name else ""
+        strain = ""
+        taxon_id = biosample_obj["taxId"]
+        return {
+            "assembly_ID": assembly_ID,
             "taxon_id": taxon_id,
             "scientific_name": scientific_name,
             "organism_name": scientific_name,
