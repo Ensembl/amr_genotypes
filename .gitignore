@@ -14,3 +14,5 @@ log.conf
 .hypothesis
 venv/
 /.vscode
+/*.csv
+/*.parquet
