@@ -9,7 +9,7 @@ A tool for parsing GFFs and TSV files produced by [mettannotator](https://github
 ```bash
 python -mvenv .venv
 source .venv/bin/activate
-pip install -r requirements.txt .
+pip install -r requirements.txt
 ```
 
 ### Running
