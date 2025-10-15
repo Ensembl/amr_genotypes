@@ -47,8 +47,6 @@ We ensure records are linked to the following archives
 
 Protein identifiers are based on the GCA for a genome and autoincremented number starting at `00001`. Identifiers are consistent and unique within a genome.
 
-## References and resources
-
 [mettannotator]: <https://github.com/EBI-Metagenomics/mettannotator>
 [mettannotatortag]: <https://github.com/EBI-Metagenomics/mettannotator/releases/tag/v1.4.0>
 [AMRFinderPlus]: <https://www.ncbi.nlm.nih.gov/pathogens/antimicrobial-resistance/AMRFinder/>
