@@ -66,5 +66,3 @@ assembly_fields = [
     "_bin",
 ]
 default_feature_fields = [c for c in default_output_columns if c not in assembly_fields]
-
-print(default_feature_fields)

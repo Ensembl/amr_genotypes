@@ -34,7 +34,7 @@ class Cli:
 
     def process_dir(self):
         """Process all GFF files in a given directory"""
-        files = sorted(pathlib.Path(self.args.dir).glob("*.gff*"))
+        files = sorted(list(pathlib.Path(self.args.dir).rglob("*.gff*")))
         for f in files:
             self.process_file(f)
 
