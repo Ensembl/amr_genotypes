@@ -27,12 +27,14 @@ class Cli:
             self.process_dir()
         elif self.args.files:
             self.process_files()
-        log.info(f"Processed {len(self.output)} AMR features from {len(self.assemblies)} assemblies")
+        log.info(
+            f"Processed {len(self.output)} AMR features from {len(self.assemblies)} assemblies"
+        )
         self.write_outputs()
 
     def process_dir(self):
         """Process all GFF files in a given directory"""
-        files = sorted(pathlib.Path(self.args.dir).glob("*.gff"))
+        files = sorted(pathlib.Path(self.args.dir).glob("*.gff*"))
         for f in files:
             self.process_file(f)
 

@@ -1,6 +1,7 @@
 from src.lookup import Lookup
 import unittest
 
+
 # Uses live connections to ENA and BioSamples both at EBI so don't run as a matter of course
 # To run, use: python -m unittest integration-tests/test_ena_accessions.py
 class TestEnaAccessions(unittest.TestCase):
@@ -22,7 +23,7 @@ class TestEnaAccessions(unittest.TestCase):
         ena_accession = "GCA_000091005.1"
         summary = self.lookup.assembly_summary(ena_accession)
         self.assert_fields(summary)
-    
+
     def assert_fields(self, summary):
         self.assertIsInstance(summary, dict)
         self.assertIn("assembly_ID", summary)
@@ -37,6 +38,7 @@ class TestEnaAccessions(unittest.TestCase):
         self.assertIsInstance(summary.get("strain"), str)
         self.assertIn("BioSample_ID", summary)
         self.assertIsInstance(summary.get("BioSample_ID"), str)
+
 
 if __name__ == "__main__":
     unittest.main()

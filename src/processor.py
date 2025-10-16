@@ -4,13 +4,13 @@ import gffutils
 import logging
 import os
 import pathlib
-from pathlib import Path
 import re
 
 from functools import cached_property
 from typing import List, Dict
 
 from .lookup import Lookup
+from .utils import slurp_file, open_file
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +47,10 @@ class Processor:
         """
         new_path = str(gff_path).replace("_annotations.gff", "_amrfinderplus.tsv")
         files = list(pathlib.Path().glob(new_path))
+        if files:
+            return files.pop()
+        # Don't like this but it works if the GFF is compressed but amrfinder tsv is not
+        files = list(pathlib.Path().glob(new_path.replace(".gz", "")))
         return files.pop() if files else None
 
     @cached_property
@@ -98,8 +102,12 @@ class Processor:
             f"Processing GFF {self.gff_path} and AMRFinderPlus data {self.amrfinderplus_path}"
         )
         log.info("Creating in-memory GFF database")
-        # Have to cast to str otherwise gffutils complains about Path object not being an iterable
-        db = gffutils.create_db(str(self.gff_path), ":memory:")
+        db = gffutils.create_db(
+            data=slurp_file(self.gff_path),
+            dbfn=":memory:",
+            verbose=False,
+            from_string=True,
+        )
         log.info(f"Parsing AMRFinderPlus TSV for {self.assembly}")
         amr_records = self.parse_amrfinderplus_tsv()
         output = []
@@ -173,7 +181,7 @@ class Processor:
         if not self.amrfinderplus_path or not os.path.exists(self.amrfinderplus_path):
             return {}
         records = {}
-        with open(self.amrfinderplus_path, "rt") as f:
+        with open_file(self.amrfinderplus_path, mode="rt") as f:
             reader = csv.DictReader(f, delimiter="\t", dialect="excel")
             for row in reader:
                 records[row["Protein_id"]] = row

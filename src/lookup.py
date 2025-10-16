@@ -56,7 +56,7 @@ class Lookup:
         if not req:
             return {}
         return self.parse_assembly_xml(assembly_id, req.text)
-    
+
     def parse_assembly_xml(self, assembly_id, content: str) -> Dict[str, any]:
         """Parses the XML content from the ENA assembly API and returns a summary dictionary
 
@@ -73,7 +73,7 @@ class Lookup:
             return self._parse_gca(tree)
         elif assembly_id.startswith("ERZ"):
             return self._parse_erz(tree)
-    
+
     def _parse_gca(self, tree: ElementTree) -> Dict[str, any]:
         assembly = tree.find(".//ASSEMBLY")
         taxon = tree.find(".//TAXON")
@@ -91,7 +91,7 @@ class Lookup:
             "strain": strain,
             "BioSample_ID": biosample,
         }
-    
+
     def _parse_erz(self, tree: ElementTree) -> Dict[str, any]:
         analysis = tree.find(".//ANALYSIS")
         assembly_ID = analysis.get("accession").strip()
@@ -101,8 +101,10 @@ class Lookup:
                 break
         else:
             raise ValueError(f"No BioSample found for ERZ accession {assembly_ID}")
-        
-        biosample_obj = self._safe_get(f"https://www.ebi.ac.uk/biosamples/samples/{biosample}.json").json()
+
+        biosample_obj = self._safe_get(
+            f"https://www.ebi.ac.uk/biosamples/samples/{biosample}.json"
+        ).json()
         scientific_name = biosample_obj["characteristics"]["organism"][0]["text"]
         genus = scientific_name.split(" ")[0] if scientific_name else ""
         strain = ""
