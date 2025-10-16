@@ -1,11 +1,18 @@
 # Basic set of columns to emit
-default_columns = [
-    "id",
-    "taxon_id",
+default_output_columns = [
+    "BioSample_ID",
+    "assembly_ID",
     "genus",
-    "scientific_name",
-    "organism_name",
+    "species",
+    "organism",
     "strain",
+    "taxon_id",
+    "region",
+    "region_start",
+    "region_end",
+    "strand",
+    "_bin",
+    "id",
     "gene_symbol",
     "amr_element_symbol",
     "element_type",
@@ -13,7 +20,7 @@ default_columns = [
     "class",
     "subclass",
     "antibioticName",
-    "antibioticOntology",
+    "antibiotic_ontology",
     "antibiotic_ontology_link",
     "evidence_accession",
     "evidence_type",
@@ -29,18 +36,19 @@ default_conversion_field_names = {
     "amr_element_name": "amrfinderplus_element_name",
     "class": "drug_class",
     "subclass": "drug_subclass",
+    "_bin" : "bin"
 }
 
-# Full set of columns to emit in default output
-default_output_columns = [
-    "BioSample_ID",
-    "assembly_ID",
-    "region",
-    "region_start",
-    "region_end",
-    "strand",
-    "bin",
-] + default_columns
+# # Full set of columns to emit in default output
+# default_output_columns = [
+#     "BioSample_ID",
+#     "assembly_ID",
+#     "region",
+#     "region_start",
+#     "region_end",
+#     "strand",
+#     "bin",
+# ] + default_columns
 
 # Modified columns to exclude assembly related fields to ensure we do not overwrite them with incorrect data
 assembly_fields = [
@@ -48,8 +56,15 @@ assembly_fields = [
     "assembly_ID",
     "taxon_id",
     "genus",
-    "scientific_name",
-    "organism_name",
+    "species",
+    "organism",
     "strain",
+    "region",
+    "region_start",
+    "region_end",
+    "strand",
+    "_bin",
 ]
-default_feature_fields = [c for c in default_columns if c not in assembly_fields]
+default_feature_fields = [c for c in default_output_columns if c not in assembly_fields]
+
+print(default_feature_fields)

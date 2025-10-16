@@ -85,8 +85,8 @@ class Lookup:
         return {
             "assembly_ID": assembly.get("accession"),
             "taxon_id": taxon_id,
-            "scientific_name": scientific_name,
-            "organism_name": scientific_name,
+            "species": scientific_name,
+            "organism": scientific_name,
             "genus": genus,
             "strain": strain,
             "BioSample_ID": biosample,
@@ -112,8 +112,8 @@ class Lookup:
         return {
             "assembly_ID": assembly_ID,
             "taxon_id": taxon_id,
-            "scientific_name": scientific_name,
-            "organism_name": scientific_name,
+            "species": scientific_name,
+            "organism": scientific_name,
             "genus": genus,
             "strain": strain,
             "BioSample_ID": biosample,

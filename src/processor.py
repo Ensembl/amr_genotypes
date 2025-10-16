@@ -121,15 +121,15 @@ class Processor:
                     "assembly_ID": assembly_obj.get("assembly_ID"),
                     "BioSample_ID": assembly_obj.get("BioSample_ID"),
                     "genus": assembly_obj.get("genus"),
-                    "scientific_name": assembly_obj.get("scientific_name"),
-                    "organism_name": assembly_obj.get("scientific_name"),
+                    "species": assembly_obj.get("species"),
+                    "organism": assembly_obj.get("species"),
                     "strain": assembly_obj.get("strain"),
                     "taxon_id": assembly_obj.get("taxon_id"),
                     "region": feature.seqid,
                     "region_start": feature.start,
                     "region_end": feature.end,
                     "strand": feature.strand,
-                    "bin": feature.bin,
+                    "_bin": feature.bin,
                 }
                 for col in self.gff_fields:
                     gff_col = self.gff_conversion_field_names.get(col, col)
@@ -137,7 +137,6 @@ class Processor:
                         record[col] = ";".join(feature.attributes[gff_col])
                     else:
                         record[col] = ""
-
                 amrfinder = amr_records[feature.id] if feature.id in amr_records else {}
 
                 if "HMM_accession" in amrfinder and amrfinder["HMM_accession"] != "NA":
@@ -163,7 +162,7 @@ class Processor:
                         if amrfinder.get("Subclass") != "NA":
                             compound_obj = self.lookup.convert_antibiotic(compound)
                             new_record["antibioticName"] = compound_obj.get("label")
-                            new_record["antibioticOntology"] = compound_obj.get(
+                            new_record["antibiotic_ontology"] = compound_obj.get(
                                 "short_form"
                             )
                             new_record["antibiotic_ontology_link"] = compound_obj.get(

@@ -41,17 +41,17 @@
 |--------------------------|------------|-------------|
 |`BioSample_ID`| `VARCHAR` | The unique identifier for the biological sample (e.g., SAMEA1028830) |
 |`assembly_ID`| `VARCHAR` | The unique accession number for the genome assembly (e.g., GCA_001096525.1) |
+|`genus`| `VARCHAR` | The genus of the organism (e.g., Streptococcus) |
+| `species`          | `VARCHAR` | Scientific name of the organism |
+| `taxon_id`                 | `INTEGER`      | NCBI Taxonomy identifier of the orgainsm |
+|`organism`| `VARCHAR` | The full name of the organism (e.g., Streptococcus pneumoniae) |
+| `strain`                   | `VARCHAR` | Strain information|
 | `region`                   | `VARCHAR` | Name of a genomic region |
 | `region_start`             | `INTEGER`      | Start of the annotated gene |
 | `region_end`               | `INTEGER`      | End of the annotated gene |
 | `strand`                   | `VARCHAR` | Strand you find the gene on. Can be "+" indicating positive strand or "-" for negative strand |
-| `bin`                      | `INTEGER`      | UCSC binning index used to reduce search space for features. See [UCSC's wiki](https://genomewiki.ucsc.edu/index.php/Bin_indexing_system) for further details |
+| `_bin`                      | `INTEGER`      | UCSC binning index used to reduce search space for features. See [UCSC's wiki](https://genomewiki.ucsc.edu/index.php/Bin_indexing_system) for further details. Internal field |
 | `id`                       | `VARCHAR` | Identifier of the gene |
-| `taxon_id`                 | `INTEGER`      | NCBI Taxonomy identifier of the orgainsm |
-|`genus`| `VARCHAR` | The genus of the organism (e.g., Streptococcus) |
-| `scientific_name`          | `VARCHAR` | Scientific name of the organism |
-|`organism`| `VARCHAR` | The full name of the organism (e.g., Streptococcus pneumoniae) |
-| `strain`                   | `VARCHAR` | Strain information|
 | `gene_symbol`              | `VARCHAR` | Locus tag identifier |
 | `amr_element_symbol`       | `VARCHAR` | AMRFinderPlus symbol including additional point mutation information if available |
 | `element_type`             | `VARCHAR` | Broad catagory of AMR element. Normally set to `AMR` |
@@ -59,7 +59,7 @@
 | `class`                    | `VARCHAR` | Overall class of AMR compound as given by AMRFinderPlus. Normally a broad representation of antibiotics |
 | `subclass`                 | `VARCHAR` | Specific antibiotic compound as given by AMRFinderPlus. Can also be set to the same as class |
 | `antibioticName` | `VARCHAR` | Normalised name of the antibiotic tested (e.g., beta-lactams, trimethoprim-sulfamethoxazole)|
-|`antibioticOntology`| `VARCHAR` | An ontology ID for the antibiotic (e.g., ARO_3004024)|
+|`antibiotic_ontology`| `VARCHAR` | An ontology ID for the antibiotic (e.g., ARO_3004024)|
 | `antibiotic_ontology_link` | `VARCHAR` | URL for linking to an external resource for the antibiotic compount |
 | `evidence_accession`       | `VARCHAR` | Accession for the evidence model used for the assertion |
 | `evidence_type`            | `VARCHAR` | Type of model. Normally a hidden Markov model and set to `HMM` |
