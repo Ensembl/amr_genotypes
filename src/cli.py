@@ -120,7 +120,7 @@ class Cli:
         )
         parser.add_argument(
             "--files",
-            help="Provide a file of file paths. Assumes 1 file path per line and will be a GFF3 formatted file",
+            help="Provide a file of file paths. Assumes 1 file path per line and will be a GFF3 formatted file. Supports compressed files",
             nargs="+",
             type=str,
         )
@@ -132,7 +132,7 @@ class Cli:
         parser.add_argument(
             "--output",
             default="amr_genotype.csv",
-            help="Location to write output to",
+            help="Location to write output to. Adding a compression extension (e.g. .gz, .bz2, .xz, .br) will compress the file accordingly",
             type=str,
         )
         parser.add_argument(
@@ -144,7 +144,7 @@ class Cli:
         parser.add_argument(
             "--output-assembly",
             default="assembly.csv",
-            help="Location to write assembly CSV output to",
+            help="Location to write assembly CSV output to. Adding a compression extension (e.g. .gz, .bz2, .xz, .br) will compress the file accordingly",
             type=str,
         )
         parser.add_argument(

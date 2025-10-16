@@ -20,6 +20,7 @@ default_output_columns = [
     "class",
     "subclass",
     "antibioticName",
+    "antibioticAbbreviation",
     "antibiotic_ontology",
     "antibiotic_ontology_link",
     "evidence_accession",
@@ -36,19 +37,8 @@ default_conversion_field_names = {
     "amr_element_name": "amrfinderplus_element_name",
     "class": "drug_class",
     "subclass": "drug_subclass",
-    "_bin" : "bin"
+    "_bin": "bin",
 }
-
-# # Full set of columns to emit in default output
-# default_output_columns = [
-#     "BioSample_ID",
-#     "assembly_ID",
-#     "region",
-#     "region_start",
-#     "region_end",
-#     "strand",
-#     "bin",
-# ] + default_columns
 
 # Modified columns to exclude assembly related fields to ensure we do not overwrite them with incorrect data
 assembly_fields = [
@@ -66,3 +56,38 @@ assembly_fields = [
     "_bin",
 ]
 default_feature_fields = [c for c in default_output_columns if c not in assembly_fields]
+
+parquet = {
+    "compression": "zstd",
+    "compression_level": 3,
+}
+
+# Taken from CABBAGE antibiograms
+antibiotic_acrynoyms = {
+    "amikacin": "AMK",
+    "ampicillin": "AMP",
+    "ampicillin-sulbactam": "SAM",
+    "aztreonam": "ATM",
+    "cefazolin": "CZO",
+    "cefepime": "FEP",
+    "cefotaxime": "CTX",
+    "cefoxitin": "FOX",
+    "ceftazidime": "CAZ",
+    "ceftriaxone": "CRO",
+    "ciprofloxacin": "CIP",
+    "doripenem": "DOR",
+    "ertapenem": "ETP",
+    "gentamicin": "GEN",
+    "imipenem": "IPM",
+    "levofloxacin": "LVX",
+    "meropenem": "MEM",
+    "minocycline": "MNO",
+    "nitrofurantoin": "NIT",
+    "piperacillin": "PIP",
+    "piperacillin-tazobactam": "TZP",
+    "tetracycline": "TCY",
+    "ticarcillin-clavulanic acid": "TCC",
+    "tigecycline": "TGC",
+    "tobramycin": "TOB",
+    "trimethoprim-sulfamethoxazole": "SXT"
+}

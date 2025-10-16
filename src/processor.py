@@ -11,6 +11,7 @@ from typing import List, Dict
 
 from .lookup import Lookup
 from .utils import slurp_file, open_file
+from .config import antibiotic_acrynoyms
 
 log = logging.getLogger(__name__)
 
@@ -161,7 +162,11 @@ class Processor:
                         new_record = copy.deepcopy(record)
                         if amrfinder.get("Subclass") != "NA":
                             compound_obj = self.lookup.convert_antibiotic(compound)
-                            new_record["antibioticName"] = compound_obj.get("label")
+                            antibiotic_name = compound_obj.get("label")
+                            new_record["antibioticName"] = antibiotic_name
+                            new_record["antibioticAbbreviation"] = (
+                                antibiotic_acrynoyms.get(antibiotic_name, None)
+                            )
                             new_record["antibiotic_ontology"] = compound_obj.get(
                                 "short_form"
                             )

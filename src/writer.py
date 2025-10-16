@@ -2,6 +2,10 @@ from enum import Enum
 from typing import Dict, List
 from csv import DictWriter
 import logging
+import pandas as pd
+
+from .utils import open_file
+from .config import parquet
 
 
 class AmrWriter:
@@ -51,13 +55,16 @@ class AmrWriter:
             data (Dict[str,any]): A list of dictionaries to write to a file
         """
         if self.format == AmrWriter.Formats.PARQUET:
-            import pandas as pd
-
             df = pd.DataFrame(data, columns=self.columns)
-            df.to_parquet(self.filename, index=False)
+            df.to_parquet(
+                self.filename,
+                index=False,
+                compression=parquet["compression"],
+                compression_level=parquet["compression_level"],
+            )
             return
         else:
-            with open(self.filename, "wt") as out:
+            with open_file(self.filename, "wt") as out:
                 writer = DictWriter(
                     out, fieldnames=self.columns, dialect=self.format.dialect()
                 )

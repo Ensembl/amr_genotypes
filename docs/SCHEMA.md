@@ -59,6 +59,7 @@
 | `class`                    | `VARCHAR` | Overall class of AMR compound as given by AMRFinderPlus. Normally a broad representation of antibiotics |
 | `subclass`                 | `VARCHAR` | Specific antibiotic compound as given by AMRFinderPlus. Can also be set to the same as class |
 | `antibioticName` | `VARCHAR` | Normalised name of the antibiotic tested (e.g., beta-lactams, trimethoprim-sulfamethoxazole)|
+|`antibioticAbbreviation`| `VARCHAR` | A common abbreviation for the antibiotic (e.g. SXT)|
 |`antibiotic_ontology`| `VARCHAR` | An ontology ID for the antibiotic (e.g., ARO_3004024)|
 | `antibiotic_ontology_link` | `VARCHAR` | URL for linking to an external resource for the antibiotic compount |
 | `evidence_accession`       | `VARCHAR` | Accession for the evidence model used for the assertion |
