@@ -89,5 +89,5 @@ antibiotic_acrynoyms = {
     "ticarcillin-clavulanic acid": "TCC",
     "tigecycline": "TGC",
     "tobramycin": "TOB",
-    "trimethoprim-sulfamethoxazole": "SXT"
+    "trimethoprim-sulfamethoxazole": "SXT",
 }
