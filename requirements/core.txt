@@ -1,5 +1,4 @@
 gffutils
-pandas
 pyarrow
 brotli
 requests

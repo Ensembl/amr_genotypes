@@ -8,10 +8,11 @@ from .config import (
     default_conversion_field_names,
     assembly_fields,
 )
-from .writer import AmrWriter
+from .writer import Formats, StreamingAmrWriter
 from .utils import open_file
 import pathlib
 import logging
+from typing import List
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -20,96 +21,59 @@ log = logging.getLogger(__name__)
 class Cli:
 
     def __init__(self):
-        self.output = []
-        self.assemblies = []
+        self.records = 0
+        self.assemblies = 0
 
     def run(self):
         if self.args.dir:
-            self.process_dir()
+            files = sorted(list(pathlib.Path(self.args.dir).rglob("*.gff*")))
         elif self.args.files:
-            self.process_files()
+            files = [s.strip() for s in self.args.files]
         elif self.args.files_list:
-            self.process_files_list()
+            with open_file(self.args.files_list) as f:
+                files = [line.strip() for line in f]
+        self.process_files(files)
         log.info(
-            f"Processed {len(self.output)} AMR features from {len(self.assemblies)} assemblies"
+            f"Processed {self.records} AMR features from {self.assemblies} assemblies"
         )
-        self.write_outputs()
 
-    def process_dir(self):
-        """Process all GFF files in a given directory"""
-        files = sorted(list(pathlib.Path(self.args.dir).rglob("*.gff*")))
-        for f in files:
-            self.process_file(f)
+    def process_files(self, files: List):
+        with StreamingAmrWriter(
+            self.args.output, columns=default_output_columns, format=Formats.CSV
+        ) as amr_csv, StreamingAmrWriter(
+            self.args.output_parquet,
+            columns=default_output_columns,
+            format=Formats.PARQUET,
+        ) as amr_parquet, StreamingAmrWriter(
+            self.args.output_assembly, columns=assembly_fields, format=Formats.CSV
+        ) as assembly_csv, StreamingAmrWriter(
+            self.args.output_assembly_parquet,
+            columns=assembly_fields,
+            format=Formats.PARQUET,
+        ) as assembly_parquet:
+            for file in files:
+                log.info(f"Processing file {file}")
+                assembly = Processor.gff_path_to_assembly(file)
+                amrfinderplus_path = Processor.find_amrfinderplus_tsv(file)
 
-    def process_files(self):
-        """Process all GFF files given at the command line"""
-        for f in self.args.files:
-            if f:
-                self.process_file(f.strip())
+                processor = Processor(
+                    lookup=self.lookup,
+                    gff_path=file,
+                    gff_fields=default_feature_fields,
+                    gff_conversion_field_names=default_conversion_field_names,
+                    gff_type=self.args.gff_type,
+                    amrfinderplus_path=amrfinderplus_path,
+                    amrfinderplus_type=self.args.filter,
+                    assembly=assembly,
+                )
 
-    def process_files_list(self):
-        """Process all files in a text file. One file per line"""
-        with open_file(self.args.files_list) as f:
-            for line in f:
-                self.process_file(line.strip())
-
-    def process_file(self, file: str):
-        log.info(f"Processing file {file}")
-        assembly = Processor.gff_path_to_assembly(file)
-        amrfinderplus_path = Processor.find_amrfinderplus_tsv(file)
-
-        processor = Processor(
-            lookup=self.lookup,
-            gff_path=file,
-            gff_fields=default_feature_fields,
-            gff_conversion_field_names=default_conversion_field_names,
-            gff_type=self.args.gff_type,
-            amrfinderplus_path=amrfinderplus_path,
-            amrfinderplus_type=self.args.filter,
-            assembly=assembly,
-        )
-        self.output.extend(processor.process())
-        self.assemblies.append(processor.assembly_summary)
-
-    def write_outputs(self):
-        if self.args.output:
-            log.info(f"Writing output to {self.args.output}")
-            writer = AmrWriter(
-                filename=self.args.output,
-                columns=default_output_columns,
-                format=AmrWriter.Formats.CSV,
-            )
-            writer.write_data(self.output)
-            writer.close()
-        if self.args.output_parquet:
-            log.info(f"Writing parquet output to {self.args.output_parquet}")
-            writer = AmrWriter(
-                filename=self.args.output_parquet,
-                columns=default_output_columns,
-                format=AmrWriter.Formats.PARQUET,
-            )
-            writer.write_data(self.output)
-            writer.close()
-        if self.args.output_assembly:
-            log.info(f"Writing assembly output to {self.args.output_assembly}")
-            writer = AmrWriter(
-                filename=self.args.output_assembly,
-                columns=assembly_fields,
-                format=AmrWriter.Formats.CSV,
-            )
-            writer.write_data(self.assemblies)
-            writer.close()
-        if self.args.output_assembly_parquet:
-            log.info(
-                f"Writing assembly parquet output to {self.args.output_assembly_parquet}"
-            )
-            writer = AmrWriter(
-                filename=self.args.output_assembly_parquet,
-                columns=assembly_fields,
-                format=AmrWriter.Formats.PARQUET,
-            )
-            writer.write_data(self.assemblies)
-            writer.close()
+                output = processor.process()
+                amr_csv.write_data(output)
+                amr_parquet.write_data(output)
+                assembly_csv.write_data([processor.assembly_summary])
+                assembly_parquet.write_data([processor.assembly_summary])
+                self.records += len(output)
+                self.assemblies += 1
 
     @cached_property
     def args(self):

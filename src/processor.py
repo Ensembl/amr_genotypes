@@ -119,6 +119,7 @@ class Processor:
             dbfn=":memory:",
             verbose=False,
             from_string=True,
+            merge_strategy="merge",
         )
         log.info(f"Parsing AMRFinderPlus TSV for {self.assembly}")
         amr_records = self.parse_amrfinderplus_tsv()
