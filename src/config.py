@@ -99,6 +99,10 @@ parquet = {
 #     "trimethoprim-sulfamethoxazole": "SXT",
 # }
 
+custom_antibiotic_acronyms = {
+    "kanamycin A" : "KAN",
+}
+
 antibiotic_acrynoyms = {
     "amikacin": "AMK",
     "aminoglycosides": None,
@@ -276,4 +280,4 @@ antibiotic_acrynoyms = {
     "vancomycin": "VAN",
     "voriconazole": "VOR",
     "zoliflodacin": "ZFD",
-}
+} + custom_antibiotic_acronyms
