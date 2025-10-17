@@ -280,4 +280,4 @@ antibiotic_acrynoyms = {
     "vancomycin": "VAN",
     "voriconazole": "VOR",
     "zoliflodacin": "ZFD",
-} + custom_antibiotic_acronyms
+} | custom_antibiotic_acronyms
