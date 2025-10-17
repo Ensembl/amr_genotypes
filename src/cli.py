@@ -38,19 +38,24 @@ class Cli:
         )
 
     def process_files(self, files: List):
+        # with StreamingAmrWriter(
+        #     self.args.output, columns=default_output_columns, format=Formats.CSV
+        # ) as amr_csv, StreamingAmrWriter(
+        #     self.args.output_parquet,
+        #     columns=default_output_columns,
+        #     format=Formats.PARQUET,
+        # ) as amr_parquet, StreamingAmrWriter(
+        #     self.args.output_assembly, columns=assembly_fields, format=Formats.CSV
+        # ) as assembly_csv, StreamingAmrWriter(
+        #     self.args.output_assembly_parquet,
+        #     columns=assembly_fields,
+        #     format=Formats.PARQUET,
+        # ) as assembly_parquet:
         with StreamingAmrWriter(
             self.args.output, columns=default_output_columns, format=Formats.CSV
         ) as amr_csv, StreamingAmrWriter(
-            self.args.output_parquet,
-            columns=default_output_columns,
-            format=Formats.PARQUET,
-        ) as amr_parquet, StreamingAmrWriter(
             self.args.output_assembly, columns=assembly_fields, format=Formats.CSV
-        ) as assembly_csv, StreamingAmrWriter(
-            self.args.output_assembly_parquet,
-            columns=assembly_fields,
-            format=Formats.PARQUET,
-        ) as assembly_parquet:
+        ) as assembly_csv:
             for file in files:
                 log.info(f"Processing file {file}")
                 assembly = Processor.gff_path_to_assembly(file)
@@ -69,9 +74,9 @@ class Cli:
 
                 output = processor.process()
                 amr_csv.write_data(output)
-                amr_parquet.write_data(output)
+                # amr_parquet.write_data(output)
                 assembly_csv.write_data([processor.assembly_summary], flush=True)
-                assembly_parquet.write_data([processor.assembly_summary])
+                # assembly_parquet.write_data([processor.assembly_summary])
                 self.records += len(output)
                 self.assemblies += 1
 
