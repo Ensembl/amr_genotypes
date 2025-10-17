@@ -3,7 +3,7 @@ import csv
 import gffutils
 import logging
 import os
-import pathlib
+from pathlib import Path
 import re
 
 from functools import cached_property
@@ -46,13 +46,20 @@ class Processor:
         by replacing '_annotations.gff' with '_amrfinderplus.tsv' and searching
         in the same directory.
         """
-        new_path = str(gff_path).replace("_annotations.gff", "_amrfinderplus.tsv")
-        files = list(pathlib.Path().glob(new_path))
-        if files:
-            return files.pop()
-        # Don't like this but it works if the GFF is compressed but amrfinder tsv is not
-        files = list(pathlib.Path().glob(new_path.replace(".gz", "")))
-        return files.pop() if files else None
+        gff_path = Path(gff_path)
+        # Build the expected TSV filename
+        tsv_name = gff_path.name.replace("_annotations.gff", "_amrfinderplus.tsv")
+        tsv_path = gff_path.parent / tsv_name
+        if tsv_path.exists():
+            return tsv_path
+
+        # If GFF was compressed but TSV is not, try removing .gz
+        if tsv_path.suffix == ".gz":
+            uncompressed_tsv_path = tsv_path.with_suffix("")
+            if uncompressed_tsv_path.exists():
+                return uncompressed_tsv_path
+
+        return None
 
     @cached_property
     def assembly_summary(self) -> List[Dict[str, any]]:
@@ -144,8 +151,12 @@ class Processor:
                     record["evidence_accession"] = amrfinder["HMM_accession"]
                     record["evidence_type"] = "HMM"
                     # Link needs to have version removed and trailing slash added
-                    hmm_accession_clean = re.sub(r"\.\d+$", "/", amrfinder["HMM_accession"])
-                    record["evidence_link"] = f"{ncbi_evidence_link}{hmm_accession_clean}"
+                    hmm_accession_clean = re.sub(
+                        r"\.\d+$", "/", amrfinder["HMM_accession"]
+                    )
+                    record["evidence_link"] = (
+                        f"{ncbi_evidence_link}{hmm_accession_clean}"
+                    )
                     record["evidence_description"] = amrfinder["HMM_description"]
 
                 amr_class = amrfinder.get("Class", "NA")
