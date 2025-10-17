@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 class Lookup:
     ols_url = "https://www.ebi.ac.uk/ols4/api/search"
 
+    def __init__(self):
+        self.session = requests.Session()
+
     @lru_cache(maxsize=None)
     def convert_antibiotic(self, antibiotic: str) -> Optional[dict]:
         """Attempts to convert an antibiotic name to an ontology
@@ -144,10 +147,10 @@ class Lookup:
             return res
         return None
 
-    def _safe_get(self, url, params=None, retries=3, timeout=10):
+    def _safe_get(self, url, params=None, retries=5, timeout=10):
         for i in range(retries):
             try:
-                r = requests.get(url, params=params, timeout=timeout)
+                r = self.session.get(url, params=params, timeout=timeout)
                 r.raise_for_status()
                 return r
             except requests.RequestException as e:

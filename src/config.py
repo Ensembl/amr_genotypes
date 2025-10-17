@@ -100,7 +100,7 @@ parquet = {
 # }
 
 custom_antibiotic_acronyms = {
-    "kanamycin A" : "KAN",
+    "kanamycin A": "KAN",
 }
 
 antibiotic_acrynoyms = {
