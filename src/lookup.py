@@ -42,7 +42,6 @@ class Lookup:
         log.warning(f"No ontology match for antibiotic {antibiotic}")
         return None
 
-    @lru_cache(maxsize=None)
     def assembly_summary(self, assembly_id: str) -> Dict[str, any]:
         """Takes an INSDC accession (like GCA) and returns a summary dictionary
         with taxon and assembly information.
