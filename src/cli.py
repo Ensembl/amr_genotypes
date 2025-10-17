@@ -25,6 +25,7 @@ class Cli:
         self.assemblies = 0
 
     def run(self):
+        files = []
         if self.args.dir:
             files = sorted(list(pathlib.Path(self.args.dir).rglob("*.gff*")))
         elif self.args.files:
@@ -32,7 +33,8 @@ class Cli:
         elif self.args.files_list:
             with open_file(self.args.files_list) as f:
                 files = [line.strip() for line in f]
-        self.process_files(files)
+        if files:
+            self.process_files(files)
         log.info(
             f"Processed {self.records} AMR features from {self.assemblies} assemblies"
         )
