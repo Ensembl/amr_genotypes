@@ -144,9 +144,8 @@ class Processor:
                     record["evidence_accession"] = amrfinder["HMM_accession"]
                     record["evidence_type"] = "HMM"
                     # Link needs to have version removed and trailing slash added
-                    record["evidence_link"] = (
-                        f"{ncbi_evidence_link}{re.sub(r'\.\d+$', '/', amrfinder['HMM_accession'])}"
-                    )
+                    hmm_accession_clean = re.sub(r"\.\d+$", "/", amrfinder["HMM_accession"])
+                    record["evidence_link"] = f"{ncbi_evidence_link}{hmm_accession_clean}"
                     record["evidence_description"] = amrfinder["HMM_description"]
 
                 amr_class = amrfinder.get("Class", "NA")
