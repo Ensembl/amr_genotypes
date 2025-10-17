@@ -74,13 +74,22 @@ class Cli:
                     assembly=assembly,
                 )
 
-                output = processor.process()
-                amr_csv.write_data(output)
-                # amr_parquet.write_data(output)
-                assembly_csv.write_data([processor.assembly_summary], flush=True)
-                # assembly_parquet.write_data([processor.assembly_summary])
-                self.records += len(output)
-                self.assemblies += 1
+                try:
+                    output = processor.process()
+                    amr_csv.write_data(output)
+                    # amr_parquet.write_data(output)
+                    assembly_csv.write_data([processor.assembly_summary], flush=True)
+                    # assembly_parquet.write_data([processor.assembly_summary])
+                    self.records += len(output)
+                    self.assemblies += 1
+                except EOFError:
+                    log.error(
+                        f"{assembly} file {file} might be corrupted. Check the file. Skipping record"
+                    )
+                except Exception as e:
+                    log.error(
+                        f"Unknown issue with {assembly} file {file}. {e}. Skipping record"
+                    )
 
     @cached_property
     def args(self):

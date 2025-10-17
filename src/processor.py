@@ -177,17 +177,21 @@ class Processor:
                         new_record = copy.deepcopy(record)
                         if amrfinder.get("Subclass") != "NA":
                             compound_obj = self.lookup.convert_antibiotic(compound)
-                            antibiotic_name = compound_obj.get("label")
-                            new_record["antibioticName"] = antibiotic_name
-                            new_record["antibioticAbbreviation"] = (
-                                antibiotic_acrynoyms.get(antibiotic_name, None)
-                            )
-                            new_record["antibiotic_ontology"] = compound_obj.get(
-                                "short_form"
-                            )
-                            new_record["antibiotic_ontology_link"] = compound_obj.get(
-                                "ontology_link"
-                            )
+                            if compound_obj is None:
+                                record["antibioticName"] = ""
+                                record["antibiotic_ontology_link"] = ""
+                            else:
+                                antibiotic_name = compound_obj.get("label")
+                                new_record["antibioticName"] = antibiotic_name
+                                new_record["antibioticAbbreviation"] = (
+                                    antibiotic_acrynoyms.get(antibiotic_name, None)
+                                )
+                                new_record["antibiotic_ontology"] = compound_obj.get(
+                                    "short_form"
+                                )
+                                new_record["antibiotic_ontology_link"] = (
+                                    compound_obj.get("ontology_link")
+                                )
                         output.append(new_record)
                 else:
                     record["antibioticName"] = ""
