@@ -68,7 +68,11 @@ class Processor:
         Returns:
             List[Dict[str, any]]: Description of the assembly record from ENA
         """
-        return self.lookup.assembly_summary(self.assembly)
+        summary = self.lookup.assembly_summary(self.assembly)
+        # set some basic information
+        summary["phenotype"] = False
+        summary["genotype"] = True
+        return summary
 
     def __init__(
         self,
