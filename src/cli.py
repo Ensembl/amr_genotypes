@@ -9,6 +9,7 @@ from .config import (
     assembly_fields,
 )
 from .writer import AmrWriter
+from .utils import open_file
 import pathlib
 import logging
 
@@ -27,6 +28,8 @@ class Cli:
             self.process_dir()
         elif self.args.files:
             self.process_files()
+        elif self.args.files_list:
+            self.process_files_list()
         log.info(
             f"Processed {len(self.output)} AMR features from {len(self.assemblies)} assemblies"
         )
@@ -43,6 +46,12 @@ class Cli:
         for f in self.args.files:
             if f:
                 self.process_file(f.strip())
+
+    def process_files_list(self):
+        """Process all files in a text file. One file per line"""
+        with open_file(self.args.files_list) as f:
+            for line in f:
+                self.process_file(line.strip())
 
     def process_file(self, file: str):
         log.info(f"Processing file {file}")
@@ -115,13 +124,18 @@ class Cli:
         parser = ArgumentParser()
         parser.add_argument(
             "--dir",
-            help="Provide the directory to look for GFFs in. If you do not use this then use --urls or --files",
+            help="Provide the directory to look for GFFs in. Assumes anything called *.gff* should be parsed. If you do not use this then use --files or --files-list",
             type=str,
         )
         parser.add_argument(
             "--files",
-            help="Provide a file of file paths. Assumes 1 file path per line and will be a GFF3 formatted file. Supports compressed files",
+            help="Provide a file to parse. Assumes each file is a GFF3 formatted file. Supports compressed files",
             nargs="+",
+            type=str,
+        )
+        parser.add_argument(
+            "--files-list",
+            help="Provide a file of file paths. Assumes 1 file path per line and will be a GFF3 formatted file",
             type=str,
         )
         parser.add_argument(
