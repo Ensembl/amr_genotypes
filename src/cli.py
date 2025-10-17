@@ -70,7 +70,7 @@ class Cli:
                 output = processor.process()
                 amr_csv.write_data(output)
                 amr_parquet.write_data(output)
-                assembly_csv.write_data([processor.assembly_summary])
+                assembly_csv.write_data([processor.assembly_summary], flush=True)
                 assembly_parquet.write_data([processor.assembly_summary])
                 self.records += len(output)
                 self.assemblies += 1

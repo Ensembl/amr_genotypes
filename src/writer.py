@@ -76,18 +76,19 @@ class StreamingAmrWriter:
         if exc_type:
             print(f"Exception occurred: {exc_value}")
 
-    def write_data(self, data=List[dict]) -> None:
+    def write_data(self, data=List[dict], flush: False = bool) -> None:
         """Writes the given data dictionary to the output file. Any mismatch
         between the columns provided at initialisation and the keys in the data
         dictionary will result in the code failing.
 
         Args:
             data (Dict[str,any]): A list of dictionaries to write to a file
+            flush bool
         """
         if self.format == Formats.PARQUET:
             self._write_parquet(data)
         else:
-            self._write_csv(data)
+            self._write_csv(data, flush=flush)
 
     def _write_parquet(self, data) -> None:
         if not self._first_write:
@@ -107,11 +108,13 @@ class StreamingAmrWriter:
             table = pa.Table.from_pylist(data, self._schema)
             self._writer.write_table(table)
 
-    def _write_csv(self, data) -> None:
+    def _write_csv(self, data, flush: False = bool) -> None:
         if not self._writer:
             self._open()
         for row in data:
             self._writer.writerow(row)
+            if flush:
+                self._fh.flush()
 
     def close(self):
         self._fh.close()
