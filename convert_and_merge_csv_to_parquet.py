@@ -16,6 +16,7 @@ Usage:
 import argparse
 from pathlib import Path
 import pyarrow.csv as pv
+import pyarrow as pa
 import pyarrow.parquet as pq
 import logging
 
@@ -43,11 +44,10 @@ def convert_csv_to_parquet(input_dir: Path, output_dir: Path, pattern: str):
 def merge_parquet_files(parquet_files, merged_file: Path):
     log.info(f"Merging {len(parquet_files)} Parquet files into {merged_file}...")
     tables = [pq.read_table(p) for p in parquet_files]
-    combined_table = tables[0]
-    if len(tables) > 1:
-        combined_table = combined_table.combine_chunks().concat_tables(tables[1:], promote=True)
+    combined_table = pa.concat_tables(tables, promote=True)
+    combined_table = combined_table.combine_chunks()
     pq.write_table(combined_table, merged_file)
-    print(f"Merged Parquet file saved to: {merged_file}")
+    log.info(f"Merged Parquet file saved to: {merged_file}")
 
 
 def main():
