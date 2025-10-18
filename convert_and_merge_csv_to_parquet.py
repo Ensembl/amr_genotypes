@@ -20,6 +20,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import logging
 
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 def convert_csv_to_parquet(input_dir: Path, output_dir: Path, pattern: str):
