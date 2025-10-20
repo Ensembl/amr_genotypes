@@ -2,7 +2,9 @@ import gzip
 import bz2
 import lzma
 import brotli
+import json
 from pathlib import Path
+from typing import Any
 
 
 def open_file(file_path: str | Path, mode: str = "rt"):
@@ -30,6 +32,13 @@ def open_file(file_path: str | Path, mode: str = "rt"):
 
 def slurp_file(file_path: str | Path, mode: str = "rt") -> str:
     """Slurp all data into a string from a filepath. Supports all compression modes defined in open_file()"""
+    if not file_path.exists():
+        raise FileNotFoundError(f"Specified file not found: {file_path}")
     with open_file(file_path=file_path, mode=mode) as fh:
         data = fh.read()
         return data
+
+
+def slurp_json(file_path: str | Path, mode: str = "rt") -> Any:
+    with open_file(file_path=file_path, mode=mode) as fh:
+        return json.load(fh)

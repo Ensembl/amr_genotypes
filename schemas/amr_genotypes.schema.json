@@ -1,0 +1,139 @@
+{
+  "schema": [
+    {
+      "name": "BioSample_ID",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "assembly_ID",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "genus",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "species",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "organism",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "strain",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "taxon_id",
+      "type": "int64",
+      "nullable" : false
+    },
+    {
+      "name": "region",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "region_start",
+      "type": "int64",
+      "nullable" : false
+    },
+    {
+      "name": "region_end",
+      "type": "int64",
+      "nullable" : false
+    },
+    {
+      "name": "strand",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "_bin",
+      "type": "int64",
+      "nullable" : false
+    },
+    {
+      "name": "id",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "gene_symbol",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "amr_element_symbol",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "element_type",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "element_subtype",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "subclass",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "antibioticName",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "antibioticAbbreviation",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "antibiotic_ontology",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "antibiotic_ontology_link",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "evidence_accession",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "evidence_type",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "evidence_link",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "evidence_description",
+      "type": "string",
+      "nullable" : true
+    }
+  ]
+}

@@ -2,3 +2,5 @@ gffutils
 pyarrow
 brotli
 requests
+fsspec
+aiohttp

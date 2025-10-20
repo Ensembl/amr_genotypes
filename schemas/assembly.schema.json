@@ -1,0 +1,49 @@
+{
+  "schema": [
+    {
+      "name": "BioSample_ID",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "assembly_ID",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "taxon_id",
+      "type": "int64",
+      "nullable" : false
+    },
+    {
+      "name": "genus",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "species",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "organism",
+      "type": "string",
+      "nullable" : false
+    },
+    {
+      "name": "strain",
+      "type": "string",
+      "nullable" : true
+    },
+    {
+      "name": "phenotype",
+      "type": "bool",
+      "nullable" : false
+    },
+    {
+      "name": "genotype",
+      "type": "bool",
+      "nullable" : false
+    }
+  ]
+}
