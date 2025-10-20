@@ -7,6 +7,8 @@ from .config import (
     default_feature_fields,
     default_conversion_field_names,
     assembly_fields,
+    default_gff_filter,
+    default_amr_filter,
 )
 from .writer import Formats, StreamingAmrWriter
 from .utils import open_file
@@ -62,11 +64,9 @@ class Cli:
                 assembly = Processor.gff_path_to_assembly(file)
                 amrfinderplus_path = Processor.find_amrfinderplus_tsv(file)
 
-                processor = Processor(
+                processor = Processor.default_processor(
                     lookup=self.lookup,
                     gff_path=file,
-                    gff_fields=default_feature_fields,
-                    gff_conversion_field_names=default_conversion_field_names,
                     gff_type=self.args.gff_type,
                     amrfinderplus_path=amrfinderplus_path,
                     amrfinderplus_type=self.args.filter,
@@ -148,13 +148,13 @@ class Cli:
         )
         parser.add_argument(
             "--gff_type",
-            default="CDS",
+            default=default_gff_filter,
             help="GFF object type to use to find AMR annotation",
             type=str,
         )
         parser.add_argument(
             "--filter",
-            default="AMR",
+            default=default_amr_filter,
             help="Filter AMRFinderPlus records by this element type",
             type=str,
         )

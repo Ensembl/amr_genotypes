@@ -11,7 +11,13 @@ from typing import List, Dict
 
 from .lookup import Lookup
 from .utils import slurp_file, open_file
-from .config import antibiotic_acrynoyms
+from .config import (
+    antibiotic_acrynoyms,
+    default_conversion_field_names,
+    default_feature_fields,
+    default_gff_filter,
+    default_amr_filter,
+)
 
 log = logging.getLogger(__name__)
 
@@ -19,6 +25,29 @@ ncbi_evidence_link = "https://www.ncbi.nlm.nih.gov/genome/annotation_prok/eviden
 
 
 class Processor:
+
+    @staticmethod
+    def default_processor(
+        lookup: Lookup,
+        gff_path,
+        amrfinderplus_path: str = None,
+        gff_type: str = default_gff_filter,
+        amrfinderplus_type: str = default_amr_filter,
+        assembly: str = None,
+    ):
+        if amrfinderplus_path is None:
+            amrfinderplus_path = Processor.find_amrfinderplus_tsv(gff_path)
+        processor = Processor(
+            lookup=lookup,
+            gff_path=gff_path,
+            gff_fields=default_feature_fields,
+            gff_conversion_field_names=default_conversion_field_names,
+            gff_type=gff_type,
+            amrfinderplus_path=amrfinderplus_path,
+            amrfinderplus_type=amrfinderplus_type,
+            assembly=assembly,
+        )
+        return processor
 
     @staticmethod
     def gff_path_to_assembly(gff_path: str) -> str:
@@ -80,9 +109,9 @@ class Processor:
         gff_path: str,
         gff_fields: List[str],
         gff_conversion_field_names: Dict[str, str] = {},
-        gff_type: str = "CDS",
+        gff_type: str = default_gff_filter,
         amrfinderplus_path: str = None,
-        amrfinderplus_type: str = "AMR",
+        amrfinderplus_type: str = default_amr_filter,
         assembly: str = None,
     ):
         """Initalise the processor module
@@ -125,11 +154,15 @@ class Processor:
         amr_records = self.parse_amrfinderplus_tsv()
         output = []
         assembly_obj = self.lookup.assembly_summary(self.assembly)
+        log.info(
+            f"Filtering GFF types '{self.gff_type}' and AMRFinderPlus element types '{self.amrfinderplus_type}'"
+        )
         for feature in db.features_of_type(self.gff_type):
             if (
                 "amrfinderplus_element_symbol" in feature.attributes
                 and feature.attributes["element_type"][0] == self.amrfinderplus_type
             ):
+                log.info(feature)
                 record = {
                     "assembly_ID": assembly_obj.get("assembly_ID"),
                     "BioSample_ID": assembly_obj.get("BioSample_ID"),

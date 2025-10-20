@@ -1,3 +1,4 @@
 -r core.txt
 black
 pytest
+pytest-vcr

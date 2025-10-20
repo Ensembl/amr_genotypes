@@ -1,3 +1,7 @@
+# Default parser attributes
+default_gff_filter = "CDS"
+default_amr_filter = "AMR"
+
 # Basic set of columns to emit
 default_output_columns = [
     "BioSample_ID",
