@@ -33,6 +33,15 @@ GFF and AMRFinderPlus' output is taken and parsed using our Python tool. We sele
 
 Antibiotic records are taken from the `class` and `subclass` output from AMRFinderPlus. Where these output are the same, we indicate this is an annotation at the level of a class of antimicrobial compound. Where they differ we assume this will refer to a specific compound. Where we have records where the `class` is set to a value such as `AMINOGLYCOSIDE` and `subclass` is set to `SPECTINOMYCIN/STREPTOMYCIN` we interpret this as two separate calls on AMR and represent it as two records in our resource. We then use the previously described algorithm to retrieve the ontological term.
 
+##### Issues with lookup
+
+We curently do not process the following antimicrobial compounds
+
+- [Maduramicin](https://www.ebi.ac.uk/ols4/ontologies/chebi/classes/http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252FCHEBI_189929): no entry in ARO and not a child term of `CHEBI:33281 antimicrobial agent` in ChEBI
+- [Xeruborbactam](https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252FARO_3007048): not a child term of `ARO:1000003 antibiotic molecule` in ARO
+
+Rules for this processing are under review
+
 #### Archive identifiers
 
 We ensure records are linked to the following archives
