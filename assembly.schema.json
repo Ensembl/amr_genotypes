@@ -3,47 +3,47 @@
     {
       "name": "BioSample_ID",
       "type": "string",
-      "nullable" : false
+      "nullable": false
     },
     {
       "name": "assembly_ID",
       "type": "string",
-      "nullable" : true
+      "nullable": false
     },
     {
       "name": "taxon_id",
       "type": "int64",
-      "nullable" : true
+      "nullable": false
     },
     {
       "name": "genus",
       "type": "string",
-      "nullable" : false
+      "nullable": false
     },
     {
       "name": "species",
       "type": "string",
-      "nullable" : false
+      "nullable": false
     },
     {
       "name": "organism",
       "type": "string",
-      "nullable" : false
+      "nullable": false
     },
     {
       "name": "strain",
       "type": "string",
-      "nullable" : true
+      "nullable": true
     },
     {
       "name": "phenotype",
       "type": "bool",
-      "nullable" : false
+      "nullable": false
     },
     {
       "name": "genotype",
       "type": "bool",
-      "nullable" : false
+      "nullable": false
     }
   ]
 }

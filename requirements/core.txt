@@ -4,3 +4,4 @@ brotli
 requests
 fsspec
 aiohttp
+duckdb

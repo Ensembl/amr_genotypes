@@ -96,12 +96,12 @@
       "nullable" : false
     },
     {
-      "name": "antibioticName",
+      "name": "antibiotic_name",
       "type": "string",
       "nullable" : true
     },
     {
-      "name": "antibioticAbbreviation",
+      "name": "antibiotic_abbreviation",
       "type": "string",
       "nullable" : true
     },

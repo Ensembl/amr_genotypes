@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import pyarrow.parquet as pq
 import fsspec
+from src.utils import open_file
 
 
 def open_parquet_table(path_or_url: str):
@@ -21,7 +22,7 @@ def schema_to_dict(schema):
 
 
 def write_schema(schema_dict, output_file: Path):
-    with open(output_file, "w") as f:
+    with open_file(file_path=output_file, mode="wt") as f:
         json.dump(schema_dict, f, indent=2)
     print(f"✅ Schema written to: {output_file}")
 
@@ -31,15 +32,15 @@ def main():
         description="Generate a schema JSON file from a Parquet file (supports HTTP, S3, etc.)."
     )
     parser.add_argument(
-        "--input_parquet", required=True, help="Path or URL to the Parquet file."
+        "--input", type=Path, required=True, help="Path or URL to the Parquet file."
     )
     parser.add_argument(
-        "--output_schema", type=Path, required=True, help="Output JSON schema file."
+        "--output", type=Path, required=True, help="Output JSON schema file."
     )
     args = parser.parse_args()
 
-    print(f"Reading schema from: {args.input_parquet}")
-    table = open_parquet_table(args.input_parquet)
+    print(f"Reading schema from: {args.input}")
+    table = open_parquet_table(args.input)
 
     schema_dict = schema_to_dict(table.schema)
 
@@ -47,7 +48,7 @@ def main():
     for field in table.schema:
         print(f"  - {field.name}: {field.type} (Nullable: {field.nullable})")
 
-    write_schema(schema_dict, args.output_schema)
+    write_schema(schema_dict, args.output)
 
 
 if __name__ == "__main__":
