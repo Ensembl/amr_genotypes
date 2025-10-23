@@ -13,6 +13,11 @@ def load_duckdb(con, args) -> None:
     con.execute(
         "create table phenotype as select * from read_parquet(?)", [str(args.phenotype)]
     )
+    con.execute(
+        "create table fix_antibiotics as select * from read_csv(?)", [str(args.antibiotic_lookup)]
+    )
+    antib_fix = con.execute("Select count(*) from fix_antibiotics").fetchone()[0]
+    print(f"Found {antib_fix} entries to use for fixing antibiotic naming")
 
 
 species_names_override = [
@@ -48,21 +53,37 @@ WHERE genotype.BioSample_ID = phenotype.BioSample_ID and genotype.assembly_ID = 
 DELETE FROM genotype
 WHERE taxon_id IS NULL
 """
-        res = con.execute(query)
+        con.execute(query)
 
+    print("Fixing missing antibiotics")
+    con.execute("""
+UPDATE genotype
+SET antibioticName = a.label, antibiotic_ontology = replace(a.id, ':', '_'), antibiotic_ontology_link = a.ontology_link
+FROM fix_antibiotics a
+WHERE genotype.subclass = a.subclass and antibioticName = ''
+""")
+
+    print("Creating quick lookup table")
+    con.execute("CREATE TABLE antibiotic_abbreviation AS SELECT DISTINCT antibiotic_ontology, antibiotic_abbreviation FROM PHENOTYPE")
+    
     print(
         "Updating genotype with known antibioticAbbreviation from phenotype antibiotic_ontology"
     )
     update_antib = """
 UPDATE genotype
-SET antibioticAbbreviation = phenotype.antibiotic_abbreviation
-WHERE genotype.antibiotic_ontology = phenotype.antibiotic_ontology
+SET antibioticAbbreviation = IF(aa.antibiotic_abbreviation IS NULL, '', aa.antibiotic_abbreviation)
+FROM antibiotic_abbreviation aa
+WHERE genotype.antibiotic_ontology = aa.antibiotic_ontology
+AND genotype.antibioticAbbreviation = ''
+AND genotype.antibiotic_ontology != ''
 """
+    con.execute(update_antib)
 
     for cols in genotype_column_renames:
         print(f"Changing column from genotype.{cols[0]} to genotype.{cols[1]}")
         con.execute(f"ALTER TABLE genotype RENAME {cols[0]} TO {cols[1]}")
-
+    
+    con.commit()
 
 def update_phenotype(con) -> None:
     print(f"Updating known BioSample_ID data error in phenotype table")
@@ -70,6 +91,7 @@ def update_phenotype(con) -> None:
     for ids in affected_ids:
         query = "UPDATE phenotype SET BioSample_ID = ? WHERE BioSample_ID = ?"
         con.execute(query, ids)
+    con.commit()
 
 
 def create_assembly(con) -> None:
@@ -94,6 +116,7 @@ LEFT JOIN genotype g on (p.BioSample_ID = g.BioSample_ID and p.assembly_ID = g.a
         con.execute(f"ALTER TABLE assembly ALTER COLUMN {col} SET NOT NULL")
     rows = con.execute("SELECT COUNT(*) FROM assembly").fetchone()[0]
     print(f"Created the assembly table with {rows} row(s)")
+    con.commit()
 
 
 def write_to_disk(con, args):
@@ -132,12 +155,18 @@ def arg_parser():
         "--output-dir",
         type=Path,
         required=True,
-        help="Directory to write final outputs tpo",
+        help="Directory to write final outputs to",
     )
     parser.add_argument(
         "--dry-run",
         action=argparse.BooleanOptionalAction,
         help="Do not write to disk any results",
+    )
+    parser.add_argument(
+        "--antibiotic-lookup",
+        type=Path,
+        required=True,
+        help="CSV of additional antibiotic lookups",
     )
     return parser
 
