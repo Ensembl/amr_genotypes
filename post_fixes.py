@@ -95,24 +95,76 @@ def update_phenotype(con) -> None:
 
 
 def create_assembly(con) -> None:
-    print(f"Creating assembly table from phenotype and genotype tables")
-    query = """
-CREATE TABLE assembly AS 
+    print("Creating assembly table from phenotype and genotype tables")
+    
+    print(" > Creating unique assembly records from phenotype")
+    con.execute("""
+CREATE OR REPLACE TABLE uniq_pheno_ass AS
+SELECT DISTINCT
+    BioSample_ID,
+    assembly_ID,
+    genus,
+    species,
+    organism,
+    isolate,
+FROM phenotype
+""")
+    
+    print(" > Creating unique assembly records from genotype")
+    con.execute(
+    """
+CREATE OR REPLACE TABLE uniq_geno_ass AS
+SELECT DISTINCT
+    BioSample_ID,
+    assembly_ID,
+    genus,
+    species,
+    organism,
+    isolate,
+    taxon_id
+FROM genotype
+""")
+
+    print(" > Generating unique assembly table based on phenotype data")
+    con.execute("""
+CREATE OR REPLACE TABLE assembly AS 
 SELECT DISTINCT 
     p.BioSample_ID, 
     p.assembly_ID, 
     p.genus, 
-    p.species, 
-    IF(g.organism is null, p.organism, g.organism) as organism, 
-    g.isolate,
-    g.taxon_id, IF(p.BioSample_ID is null, false, true) as phenotype, 
-    IF(g.BioSample_ID is null, false, true) as genotype
-FROM phenotype p
-LEFT JOIN genotype g on (p.BioSample_ID = g.BioSample_ID and p.assembly_ID = g.assembly_ID)
-    """
-    con.execute(query)
+    p.species,
+    ANY_VALUE(COALESCE(p.organism, g.organism)) as organism, 
+    ANY_VALUE(COALESCE(g.isolate, p.isolate)) as isolate,
+    ANY_VALUE(g.taxon_id) as taxon_id,
+    IF(ANY_VALUE(p.BioSample_ID) is null, false, true) as phenotype, 
+    IF(ANY_VALUE(g.BioSample_ID) is null, false, true) as genotype
+FROM uniq_pheno_ass p
+LEFT JOIN uniq_geno_ass g on (p.BioSample_ID = g.BioSample_ID and p.assembly_ID = g.assembly_ID)
+group by p.BioSample_ID, p.assembly_ID, p.genus, p.species
+""")
+
+    print(" > Adding data from genotype")
+    con.execute("""
+INSERT INTO assembly
+SELECT DISTINCT 
+    g.BioSample_ID, 
+    g.assembly_ID, 
+    g.genus, 
+    g.species,
+    ANY_VALUE(COALESCE(g.organism, p.organism)) as organism, 
+    ANY_VALUE(COALESCE(g.isolate, p.isolate)) as isolate,
+    ANY_VALUE(g.taxon_id) as taxon_id,
+    IF(ANY_VALUE(p.BioSample_ID) is null, false, true) as phenotype, 
+    IF(ANY_VALUE(g.BioSample_ID) is null, false, true) as genotype
+FROM uniq_geno_ass g
+LEFT JOIN assembly p on (p.BioSample_ID = g.BioSample_ID and p.assembly_ID = g.assembly_ID)
+WHERE p.BioSample_ID IS NULL
+group by g.BioSample_ID, g.assembly_ID, g.genus, g.species
+""")
+
     columns = ["BioSample_ID", "genus", "species", "organism", "phenotype", "genotype"]
     for col in columns:
+        print(f" > Setting column {col} as NOT NULL")
         con.execute(f"ALTER TABLE assembly ALTER COLUMN {col} SET NOT NULL")
     rows = con.execute("SELECT COUNT(*) FROM assembly").fetchone()[0]
     print(f"Created the assembly table with {rows} row(s)")
