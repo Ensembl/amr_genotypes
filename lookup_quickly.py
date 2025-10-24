@@ -38,7 +38,15 @@ data_str = """
 data = json.loads(data_str)
 l = Lookup()
 
-fieldnames = ["subclass","ontology","id","label","iri","short_form","ontology_link"]
+fieldnames = [
+    "subclass",
+    "ontology",
+    "id",
+    "label",
+    "iri",
+    "short_form",
+    "ontology_link",
+]
 output = []
 for i in data:
     subclass = i["subclass"]
@@ -51,8 +59,7 @@ for i in data:
         print(f"Subclass {subclass} no hit")
 
 
-with open_file('antibiotic_lookup.csv', 'wt') as fh:
+with open_file("antibiotic_lookup.csv", "wt") as fh:
     w = csv.DictWriter(f=fh, fieldnames=fieldnames, dialect="excel")
     w.writeheader()
     w.writerows(output)
-    

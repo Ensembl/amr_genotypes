@@ -14,7 +14,8 @@ def load_duckdb(con, args) -> None:
         "create table phenotype as select * from read_parquet(?)", [str(args.phenotype)]
     )
     con.execute(
-        "create table fix_antibiotics as select * from read_csv(?)", [str(args.antibiotic_lookup)]
+        "create table fix_antibiotics as select * from read_csv(?)",
+        [str(args.antibiotic_lookup)],
     )
     antib_fix = con.execute("Select count(*) from fix_antibiotics").fetchone()[0]
     print(f"Found {antib_fix} entries to use for fixing antibiotic naming")
@@ -56,16 +57,20 @@ WHERE taxon_id IS NULL
         con.execute(query)
 
     print("Fixing missing antibiotics")
-    con.execute("""
+    con.execute(
+        """
 UPDATE genotype
 SET antibioticName = a.label, antibiotic_ontology = replace(a.id, ':', '_'), antibiotic_ontology_link = a.ontology_link
 FROM fix_antibiotics a
 WHERE genotype.subclass = a.subclass and antibioticName = ''
-""")
+"""
+    )
 
     print("Creating quick lookup table")
-    con.execute("CREATE TABLE antibiotic_abbreviation AS SELECT DISTINCT antibiotic_ontology, antibiotic_abbreviation FROM PHENOTYPE")
-    
+    con.execute(
+        "CREATE TABLE antibiotic_abbreviation AS SELECT DISTINCT antibiotic_ontology, antibiotic_abbreviation FROM PHENOTYPE"
+    )
+
     print(
         "Updating genotype with known antibioticAbbreviation from phenotype antibiotic_ontology"
     )
@@ -82,8 +87,9 @@ AND genotype.antibiotic_ontology != ''
     for cols in genotype_column_renames:
         print(f"Changing column from genotype.{cols[0]} to genotype.{cols[1]}")
         con.execute(f"ALTER TABLE genotype RENAME {cols[0]} TO {cols[1]}")
-    
+
     con.commit()
+
 
 def update_phenotype(con) -> None:
     print(f"Updating known BioSample_ID data error in phenotype table")
@@ -91,14 +97,20 @@ def update_phenotype(con) -> None:
     for ids in affected_ids:
         query = "UPDATE phenotype SET BioSample_ID = ? WHERE BioSample_ID = ?"
         con.execute(query, ids)
+    print("Dropping unwatned columns from phenotype")
+    columns = ["gen_measurement", "gen_antibiotic_ontology"]
+    for col in columns:
+        print(f" > Dropping column phenotype.{col}")
+        con.execute(f"ALTER TABLE phenotype DROP COLUMN IF EXISTS {col}")
     con.commit()
 
 
 def create_assembly(con) -> None:
     print("Creating assembly table from phenotype and genotype tables")
-    
+
     print(" > Creating unique assembly records from phenotype")
-    con.execute("""
+    con.execute(
+        """
 CREATE OR REPLACE TABLE uniq_pheno_ass AS
 SELECT DISTINCT
     BioSample_ID,
@@ -108,11 +120,12 @@ SELECT DISTINCT
     organism,
     isolate,
 FROM phenotype
-""")
-    
+"""
+    )
+
     print(" > Creating unique assembly records from genotype")
     con.execute(
-    """
+        """
 CREATE OR REPLACE TABLE uniq_geno_ass AS
 SELECT DISTINCT
     BioSample_ID,
@@ -123,10 +136,12 @@ SELECT DISTINCT
     isolate,
     taxon_id
 FROM genotype
-""")
+"""
+    )
 
     print(" > Generating unique assembly table based on phenotype data")
-    con.execute("""
+    con.execute(
+        """
 CREATE OR REPLACE TABLE assembly AS 
 SELECT DISTINCT 
     p.BioSample_ID, 
@@ -141,10 +156,12 @@ SELECT DISTINCT
 FROM uniq_pheno_ass p
 LEFT JOIN uniq_geno_ass g on (p.BioSample_ID = g.BioSample_ID and p.assembly_ID = g.assembly_ID)
 group by p.BioSample_ID, p.assembly_ID, p.genus, p.species
-""")
+"""
+    )
 
     print(" > Adding data from genotype")
-    con.execute("""
+    con.execute(
+        """
 INSERT INTO assembly
 SELECT DISTINCT 
     g.BioSample_ID, 
@@ -160,7 +177,8 @@ FROM uniq_geno_ass g
 LEFT JOIN assembly p on (p.BioSample_ID = g.BioSample_ID and p.assembly_ID = g.assembly_ID)
 WHERE p.BioSample_ID IS NULL
 group by g.BioSample_ID, g.assembly_ID, g.genus, g.species
-""")
+"""
+    )
 
     columns = ["BioSample_ID", "genus", "species", "organism", "phenotype", "genotype"]
     for col in columns:
