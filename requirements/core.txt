@@ -1,4 +1,4 @@
-gffutils
+bcbio-gff
 pyarrow
 brotli
 requests

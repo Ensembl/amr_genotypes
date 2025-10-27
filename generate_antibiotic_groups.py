@@ -58,10 +58,13 @@ def find_groups(con) -> None:
         group_info = lookup.antibiotic_iri_to_group(iri, ontology="aro")
         if group_info:
             print(f"    >> Found group info: {group_info["label"]}")
-            con.execute("""
+            con.execute(
+                """
 UPDATE antibiotics
 SET antibiotic_group_term = ?, antibiotic_group_label = ?
-WHERE antibiotic_ontology = ?""", [group_info["short_form"], group_info["label"], antibiotic_ontology])
+WHERE antibiotic_ontology = ?""",
+                [group_info["short_form"], group_info["label"], antibiotic_ontology],
+            )
 
 
 def arg_parser():
@@ -103,7 +106,8 @@ COPY (
     SELECT * FROM antibiotics
     ) 
 TO '{str(args.output)}' (FORMAT csv)
-""")
+"""
+        )
 
 
 if __name__ == "__main__":

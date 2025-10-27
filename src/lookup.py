@@ -72,9 +72,7 @@ class Lookup:
         bound_term = self.mapping[ontology]
         count = req.json().get("page", {}).get("totalElements", 0)
         if count:
-            results = (
-                req.json().get("_embedded", {}).get("terms", [])
-            )
+            results = req.json().get("_embedded", {}).get("terms", [])
             last_term = None
             for r in results:
                 # Always assigned to the first one
@@ -201,7 +199,9 @@ class Lookup:
     def _safe_get(self, url, params=None, headers={}, retries=5, timeout=10):
         for i in range(retries):
             try:
-                r = self.session.get(url, params=params, timeout=timeout, headers=headers)
+                r = self.session.get(
+                    url, params=params, timeout=timeout, headers=headers
+                )
                 r.raise_for_status()
                 return r
             except requests.RequestException as e:
