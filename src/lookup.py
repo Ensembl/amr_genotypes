@@ -11,6 +11,10 @@ log = logging.getLogger(__name__)
 
 class Lookup:
     ols_url = "https://www.ebi.ac.uk/ols4/api/search"
+    mapping = {
+        "aro": "http://purl.obolibrary.org/obo/ARO_1000003",
+        "chebi": "http://purl.obolibrary.org/obo/CHEBI_33281",
+    }
 
     def __init__(self):
         self.session = requests.Session()
@@ -31,16 +35,64 @@ class Lookup:
 
             Terms are taken from the OLS service at EMBL-EBI
         """
-        mapping = {
-            "aro": "http://purl.obolibrary.org/obo/ARO_1000003",
-            "chebi": "http://purl.obolibrary.org/obo/CHEBI_33281",
-        }
+
         for ontology in ("aro", "chebi"):
-            term = self._search_ols(antibiotic, ontology, mapping[ontology])
+            term = self._search_ols(antibiotic, ontology, self.mapping[ontology])
             if term:
                 return term
         log.warning(f"No ontology match for antibiotic {antibiotic}")
         return None
+
+    def antibiotic_iri_to_group(
+        self, iri: str, ontology: str = "aro"
+    ) -> Dict[str, str]:
+        """Takes an antibiotic ontology IRI and returns the antibiotic group
+        information by querying OLS. Assumes the group is the one below either
+        ARO:1000003 or CHEBI:33281.
+
+        Args:
+            iri (str): The ontology IRI to look up. Will double URL encode as needed.
+            ontology (str, optional): The ontology to query. Defaults to "aro".
+
+        Returns:
+            Dict[str]: A dictionary with ontology information including
+            'ontology', 'id', 'label', 'iri', 'short_form', and 'ontology_link'.
+            If no match is found an empty dictionary is returned.
+        """
+        double_encoded_iri = urllib.parse.quote_plus(urllib.parse.quote_plus(iri))
+        url = f"https://www.ebi.ac.uk/ols4/api/ontologies/aro/terms/{double_encoded_iri}/hierarchicalAncestors"
+        req = self._safe_get(
+            url,
+            params={
+                "onto": ontology,
+                "lang": "en",
+            },
+            headers={"Accept": "application/json"},
+        )
+        bound_term = self.mapping[ontology]
+        count = req.json().get("page", {}).get("totalElements", 0)
+        if count:
+            results = (
+                req.json().get("_embedded", {}).get("terms", [])
+            )
+            last_term = None
+            for r in results:
+                # Always assigned to the first one
+                if last_term is None:
+                    last_term = r
+                    next
+                if r["iri"] == bound_term:
+                    break
+                last_term = r
+            return {
+                "ontology": last_term["ontology_name"],
+                "id": last_term["obo_id"],
+                "label": last_term["label"],
+                "iri": last_term["iri"],
+                "short_form": last_term["short_form"],
+                "ontology_link": f"https://www.ebi.ac.uk/ols4/ontologies/{last_term['ontology_name']}/classes/{urllib.parse.quote_plus(last_term['iri'])}",
+            }
+        return {}
 
     def assembly_summary(self, assembly_id: str) -> Dict[str, any]:
         """Takes an INSDC accession (like GCA) and returns a summary dictionary
@@ -146,10 +198,10 @@ class Lookup:
             return res
         return None
 
-    def _safe_get(self, url, params=None, retries=5, timeout=10):
+    def _safe_get(self, url, params=None, headers={}, retries=5, timeout=10):
         for i in range(retries):
             try:
-                r = self.session.get(url, params=params, timeout=timeout)
+                r = self.session.get(url, params=params, timeout=timeout, headers=headers)
                 r.raise_for_status()
                 return r
             except requests.RequestException as e:
