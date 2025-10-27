@@ -144,14 +144,6 @@ class Processor:
         log.info(
             f"Processing GFF {self.gff_path} and AMRFinderPlus data {self.amrfinderplus_path}"
         )
-        # log.info("Creating in-memory GFF database")
-        # db = gffutils.create_db(
-        #     data=slurp_file(self.gff_path),
-        #     dbfn=":memory:",
-        #     verbose=False,
-        #     from_string=True,
-        #     merge_strategy="merge",
-        # )
         log.info(f"Parsing AMRFinderPlus TSV for {self.assembly}")
         amr_records = self.parse_amrfinderplus_tsv()
         output = []
