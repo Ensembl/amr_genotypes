@@ -2,7 +2,6 @@ import copy
 import csv
 
 from BCBio import GFF
-from binning import assign_bin
 import logging
 import os
 from pathlib import Path
@@ -12,7 +11,7 @@ from functools import cached_property
 from typing import List, Dict
 
 from .lookup import Lookup
-from .utils import slurp_file, open_file
+from .utils import open_file
 from .config import (
     antibiotic_acrynoyms,
     default_conversion_field_names,
@@ -156,11 +155,11 @@ class Processor:
                 for feature in gff_record.features:
                     if (
                         "amrfinderplus_element_symbol" in feature.qualifiers
-                        and feature.qualifiers["element_type"][0] == self.amrfinderplus_type
+                        and feature.qualifiers["element_type"][0]
+                        == self.amrfinderplus_type
                     ):
                         location = feature.location
                         strand = "-" if location.strand == -1 else "+"
-                        bin = assign_bin(location.start, location.end)
                         record = {
                             "assembly_ID": assembly_obj.get("assembly_ID"),
                             "BioSample_ID": assembly_obj.get("BioSample_ID"),
@@ -170,10 +169,9 @@ class Processor:
                             "strain": assembly_obj.get("strain"),
                             "taxon_id": assembly_obj.get("taxon_id"),
                             "region": gff_record.id,
-                            "region_start": location.start,
-                            "region_end": location.end,
+                            "region_start": int(location.start) + 1,
+                            "region_end": int(location.end),
                             "strand": strand,
-                            "_bin": bin,
                         }
                         for col in self.gff_fields:
                             gff_col = self.gff_conversion_field_names.get(col, col)
@@ -198,7 +196,9 @@ class Processor:
                             record["evidence_link"] = (
                                 f"{ncbi_evidence_link}{hmm_accession_clean}"
                             )
-                            record["evidence_description"] = amrfinder["HMM_description"]
+                            record["evidence_description"] = amrfinder[
+                                "HMM_description"
+                            ]
 
                         amr_class = amrfinder.get("Class", "NA")
                         amr_subclass = amrfinder.get("Subclass", "NA")
@@ -212,7 +212,9 @@ class Processor:
                             for compound in compounds:
                                 new_record = copy.deepcopy(record)
                                 if amrfinder.get("Subclass") != "NA":
-                                    compound_obj = self.lookup.convert_antibiotic(compound)
+                                    compound_obj = self.lookup.convert_antibiotic(
+                                        compound
+                                    )
                                     if compound_obj is None:
                                         record["antibioticName"] = ""
                                         record["antibiotic_ontology_link"] = ""
@@ -220,7 +222,9 @@ class Processor:
                                         antibiotic_name = compound_obj.get("label")
                                         new_record["antibioticName"] = antibiotic_name
                                         new_record["antibioticAbbreviation"] = (
-                                            antibiotic_acrynoyms.get(antibiotic_name, None)
+                                            antibiotic_acrynoyms.get(
+                                                antibiotic_name, None
+                                            )
                                         )
                                         new_record["antibiotic_ontology"] = (
                                             compound_obj.get("short_form")

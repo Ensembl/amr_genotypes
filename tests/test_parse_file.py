@@ -36,10 +36,10 @@ def test_parse_file(example_data_dir):
     assert f.get("organism") == "Escherichia coli O26:H11 str. 11368"
     assert f.get("genus") == "Escherichia"
     assert f.get("region") == "AP010955.1"
-    assert f.get("region_start") == 3705
+    assert f.get("region_start") == 3706
     assert f.get("region_end") == 4521
     assert f.get("strand") == "+"
-    
+
     assert (
         f.get("antibiotic_ontology_link")
         == "https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000049"
