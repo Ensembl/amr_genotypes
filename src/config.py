@@ -41,7 +41,7 @@ default_conversion_field_names = {
     "amr_element_name": "amrfinderplus_element_name",
     "class": "drug_class",
     "subclass": "drug_subclass",
-    "_bin": "bin",
+    # "_bin": "bin",
 }
 
 # Modified columns to exclude assembly related fields to ensure we do not overwrite them with incorrect data
@@ -62,7 +62,7 @@ _region_fields = [
     "region_start",
     "region_end",
     "strand",
-    "_bin",
+    # "_bin",
 ]
 default_feature_fields = [
     c for c in default_output_columns if c not in assembly_fields + _region_fields
