@@ -15,7 +15,7 @@ default_output_columns = [
     "region_start",
     "region_end",
     "strand",
-    "_bin",
+    # "_bin",
     "id",
     "gene_symbol",
     "amr_element_symbol",
