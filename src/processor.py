@@ -1,8 +1,8 @@
 import copy
 import csv
 
-# import gffutils
 from BCBio import GFF
+from binning import assign_bin
 import logging
 import os
 from pathlib import Path
@@ -160,6 +160,7 @@ class Processor:
                     ):
                         location = feature.location
                         strand = "-" if location.strand == -1 else "+"
+                        bin = assign_bin(location.start, location.end)
                         record = {
                             "assembly_ID": assembly_obj.get("assembly_ID"),
                             "BioSample_ID": assembly_obj.get("BioSample_ID"),
@@ -172,7 +173,7 @@ class Processor:
                             "region_start": location.start,
                             "region_end": location.end,
                             "strand": strand,
-                            # "_bin": feature.bin,
+                            "_bin": bin,
                         }
                         for col in self.gff_fields:
                             gff_col = self.gff_conversion_field_names.get(col, col)
