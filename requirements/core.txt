@@ -1,5 +1,4 @@
 bcbio-gff
-interval-binning
 pyarrow
 brotli
 requests
