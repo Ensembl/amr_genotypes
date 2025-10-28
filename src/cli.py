@@ -40,19 +40,6 @@ class Cli:
         )
 
     def process_files(self, files: List):
-        # with StreamingAmrWriter(
-        #     self.args.output, columns=default_output_columns, format=Formats.CSV
-        # ) as amr_csv, StreamingAmrWriter(
-        #     self.args.output_parquet,
-        #     columns=default_output_columns,
-        #     format=Formats.PARQUET,
-        # ) as amr_parquet, StreamingAmrWriter(
-        #     self.args.output_assembly, columns=assembly_fields, format=Formats.CSV
-        # ) as assembly_csv, StreamingAmrWriter(
-        #     self.args.output_assembly_parquet,
-        #     columns=assembly_fields,
-        #     format=Formats.PARQUET,
-        # ) as assembly_parquet:
         with StreamingAmrWriter(
             self.args.output, columns=default_output_columns, format=Formats.CSV
         ) as amr_csv, StreamingAmrWriter(
@@ -76,19 +63,17 @@ class Cli:
                 try:
                     output = processor.process()
                     amr_csv.write_data(output)
-                    # amr_parquet.write_data(output)
                     assembly_csv.write_data([processor.assembly_summary], flush=True)
-                    # assembly_parquet.write_data([processor.assembly_summary])
                     self.records += len(output)
                     self.assemblies += 1
                 except EOFError:
                     log.error(
                         f"{assembly} file {file} might be corrupted. Check the file. Skipping record"
                     )
-                # except Exception as e:
-                #     log.error(
-                #         f"Unknown issue with {assembly} file {file}. {e}. Skipping record"
-                #     )
+                except Exception as e:
+                    log.error(
+                        f"Unknown issue with {assembly} file {file}. {e}. Skipping record"
+                    )
 
     @cached_property
     def args(self):
@@ -133,21 +118,9 @@ class Cli:
             type=str,
         )
         parser.add_argument(
-            "--output-parquet",
-            default="amr_genotype.parquet",
-            help="Location to write parquet output to",
-            type=str,
-        )
-        parser.add_argument(
             "--output-assembly",
             default="assembly.csv",
             help="Location to write assembly CSV output to. Adding a compression extension (e.g. .gz, .bz2, .xz, .br) will compress the file accordingly",
-            type=str,
-        )
-        parser.add_argument(
-            "--output-assembly-parquet",
-            default="assembly.parquet",
-            help="Location to write assembly parquet output to",
             type=str,
         )
         parser.add_argument(
