@@ -228,7 +228,7 @@ class Processor:
                                         compound_obj = self.lookup.convert_antibiotic(
                                             compound
                                         )
-                                    #Both lookups failed
+                                    # Both lookups failed
                                     if compound_obj is None:
                                         record["antibioticName"] = ""
                                         record["antibiotic_ontology_link"] = ""
