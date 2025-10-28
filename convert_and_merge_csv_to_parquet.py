@@ -7,6 +7,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import logging
 from src.schema import load_schema_from_config
+from src.config import parquet
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -49,7 +50,12 @@ def merge_parquet_files(parquet_files, merged_file: Path):
     tables = [pq.read_table(p) for p in parquet_files]
     combined_table = pa.concat_tables(tables, promote_options="default")
     combined_table = combined_table.combine_chunks()
-    pq.write_table(combined_table, merged_file)
+    pq.write_table(
+        combined_table,
+        merged_file,
+        compression=parquet["compression"],
+        compression_level=parquet["compression_level"],
+    )
     log.info(f"Merged Parquet file saved to: {merged_file}")
 
 
@@ -81,11 +87,6 @@ def main():
         default="*.csv",
         help="Glob pattern to match CSV files (default: '*.csv').",
     )
-    # parser.add_argument(
-    #     "--enforce-null",
-    #     action=argparse.BooleanOptionalAction,
-    #     help="When parsing CSVs, look for empty strings and convert to NULL",
-    # )
     parser.add_argument(
         "--schema_file",
         type=Path,
