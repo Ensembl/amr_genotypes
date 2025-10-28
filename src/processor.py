@@ -10,10 +10,9 @@ import re
 from functools import cached_property
 from typing import List, Dict
 
-from .lookup import Lookup
-from .utils import open_file
+from .lookup import Lookup, LocalAntibioticLookup
+from .utils import open_file, bin_from_range_extended
 from .config import (
-    antibiotic_acrynoyms,
     default_conversion_field_names,
     default_feature_fields,
     default_gff_filter,
@@ -30,6 +29,7 @@ class Processor:
     @staticmethod
     def default_processor(
         lookup: Lookup,
+        local_antibiotic_lookup: LocalAntibioticLookup,
         gff_path,
         amrfinderplus_path: str = None,
         gff_type: str = default_gff_filter,
@@ -40,6 +40,7 @@ class Processor:
             amrfinderplus_path = Processor.find_amrfinderplus_tsv(gff_path)
         processor = Processor(
             lookup=lookup,
+            local_antibiotic_lookup=local_antibiotic_lookup,
             gff_path=gff_path,
             gff_fields=default_feature_fields,
             gff_conversion_field_names=default_conversion_field_names,
@@ -107,6 +108,7 @@ class Processor:
     def __init__(
         self,
         lookup: Lookup,
+        local_antibiotic_lookup: LocalAntibioticLookup,
         gff_path: str,
         gff_fields: List[str],
         gff_conversion_field_names: Dict[str, str] = {},
@@ -119,6 +121,7 @@ class Processor:
 
         Args:
             lookup (Lookup): The lookup object to use for ontology and GCA lookups
+            local_antibiotic_lookup (LocalAntibioticLookup): Local antibiotic lookup object
             gff_path (str): Path to the GFF file to process
             gff_fields (List[str]): Fields which should be extracted from the GFF file's column 9
             gff_conversion_field_names (Dict[str, str], optional): Translates from a column name given in gff_fields to the intended GFF column 9 attribute name. Defaults to {}.
@@ -128,6 +131,7 @@ class Processor:
             assembly (str, optional): Assembly to process. If not given we will attempt to decipher it from the given GFF filename. Defaults to None.
         """
         self.lookup = lookup
+        self.local_antibiotic_lookup = local_antibiotic_lookup
         self.gff_path = gff_path
         self.gff_fields = gff_fields
         self.gff_conversion_field_names = gff_conversion_field_names
@@ -159,6 +163,7 @@ class Processor:
                         == self.amrfinderplus_type
                     ):
                         location = feature.location
+                        bin = bin_from_range_extended(location.start, location.end)
                         strand = "-" if location.strand == -1 else "+"
                         record = {
                             "assembly_ID": assembly_obj.get("assembly_ID"),
@@ -172,6 +177,7 @@ class Processor:
                             "region_start": int(location.start) + 1,
                             "region_end": int(location.end),
                             "strand": strand,
+                            "_bin": bin,
                         }
                         for col in self.gff_fields:
                             gff_col = self.gff_conversion_field_names.get(col, col)
@@ -212,19 +218,27 @@ class Processor:
                             for compound in compounds:
                                 new_record = copy.deepcopy(record)
                                 if amrfinder.get("Subclass") != "NA":
-                                    compound_obj = self.lookup.convert_antibiotic(
-                                        compound
+                                    compound_obj = (
+                                        self.local_antibiotic_lookup.convert_antibiotic(
+                                            compound
+                                        )
                                     )
+                                    if compound_obj is None:
+                                        # Try the REST lookup
+                                        compound_obj = self.lookup.convert_antibiotic(
+                                            compound
+                                        )
+                                    #Both lookups failed
                                     if compound_obj is None:
                                         record["antibioticName"] = ""
                                         record["antibiotic_ontology_link"] = ""
+                                    # Successful lookup
                                     else:
                                         antibiotic_name = compound_obj.get("label")
                                         new_record["antibioticName"] = antibiotic_name
+                                        # Abbreviations are only found locally
                                         new_record["antibioticAbbreviation"] = (
-                                            antibiotic_acrynoyms.get(
-                                                antibiotic_name, None
-                                            )
+                                            compound_obj.get("abbreviation", "")
                                         )
                                         new_record["antibiotic_ontology"] = (
                                             compound_obj.get("short_form")

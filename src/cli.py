@@ -1,11 +1,10 @@
 from argparse import ArgumentParser
 from functools import cached_property
-from .lookup import Lookup
+from .lookup import Lookup, LocalAntibioticLookup
 from .processor import Processor
 from .config import (
+    antibiotics_config,
     default_output_columns,
-    default_feature_fields,
-    default_conversion_field_names,
     assembly_fields,
     default_gff_filter,
     default_amr_filter,
@@ -66,6 +65,7 @@ class Cli:
 
                 processor = Processor.default_processor(
                     lookup=self.lookup,
+                    local_antibiotic_lookup=self.local_antibiotic_lookup,
                     gff_path=file,
                     gff_type=self.args.gff_type,
                     amrfinderplus_path=amrfinderplus_path,
@@ -85,10 +85,10 @@ class Cli:
                     log.error(
                         f"{assembly} file {file} might be corrupted. Check the file. Skipping record"
                     )
-                except Exception as e:
-                    log.error(
-                        f"Unknown issue with {assembly} file {file}. {e}. Skipping record"
-                    )
+                # except Exception as e:
+                #     log.error(
+                #         f"Unknown issue with {assembly} file {file}. {e}. Skipping record"
+                #     )
 
     @cached_property
     def args(self):
@@ -98,6 +98,10 @@ class Cli:
     @cached_property
     def lookup(self):
         return Lookup()
+
+    @cached_property
+    def local_antibiotic_lookup(self):
+        return LocalAntibioticLookup(antibiotics_config)
 
     def create_argument_parser(self):
         parser = ArgumentParser()

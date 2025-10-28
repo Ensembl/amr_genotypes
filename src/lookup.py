@@ -1,12 +1,93 @@
 from typing import Optional, Dict
+from functools import cached_property
 import requests
 import urllib.parse
 import time
 from functools import lru_cache
 import logging
 from xml.etree import ElementTree
+import duckdb
 
 log = logging.getLogger(__name__)
+
+
+class LocalAntibioticLookup:
+    def __init__(self, path: str):
+        self.path = path
+
+    @cached_property
+    def db(self):
+        db = duckdb.connect(database=":memory:")
+
+        db.execute(
+            f"""
+        CREATE TABLE antibiotics AS 
+        SELECT * FROM read_csv('{self.path}')
+        """
+        )
+        db.execute("INSTALL fts")
+        db.execute("LOAD fts")
+        db.execute(
+            """
+        PRAGMA create_fts_index('antibiotics', 'antibiotic_name', 'antibiotic_name')
+        """
+        )
+
+        return db
+
+    @lru_cache(maxsize=200)
+    def convert_antibiotic(self, antibiotic: str) -> Optional[dict]:
+        """Attempts to convert an antibiotic name to an ontology
+        term using a local DuckDB FTS index.
+
+        Args:
+            antibiotic (str): The string name of the antibiotic to convert
+
+        Returns:
+            Optional[dict]: returns a dictionary with ontology information
+            or None if no match is found. Keys include 'ontology', 'id',
+            'label', 'iri', 'short_form', and 'ontology_link'.
+        """
+
+        common_columns = "ontology, antibiotic_ontology as id, antibiotic_name as label, antibiotic_abbreviation, antibiotic_ontology_link as ontology_link, iri"
+
+        # Try a direct match first
+        result = self.db.execute(
+            f"""
+        SELECT {common_columns}
+        FROM antibiotics
+        where lower(antibiotic_name) = lower(?)
+        """,
+            [antibiotic],
+        ).fetchone()
+
+        # Now try FTS match
+        if not result:
+            result = self.db.execute(
+                f"""
+            SELECT {common_columns}, score FROM 
+            (
+                select *, fts_main_antibiotics.match_bm25(antibiotic_name, ?) as score from antibiotics
+            )
+            WHERE score IS NOT NULL
+            ORDER BY score DESC
+            LIMIT 1
+            """,
+                [antibiotic],
+            ).fetchone()
+
+        if result:
+            return {
+                "ontology": result[0],
+                "id": result[1].replace("_", ":") if result[1] else None,
+                "short_form": result[1],
+                "label": result[2],
+                "abbreviation": result[3],
+                "ontology_link": result[4],
+                "iri": result[5],
+            }
+        log.warning(f"No ontology match for antibiotic {antibiotic}")
+        return None
 
 
 class Lookup:
@@ -19,7 +100,7 @@ class Lookup:
     def __init__(self):
         self.session = requests.Session()
 
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize=50)
     def convert_antibiotic(self, antibiotic: str) -> Optional[dict]:
         """Attempts to convert an antibiotic name to an ontology
         term using OLS and will return either an ARO or ChEBI term. In
