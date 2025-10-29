@@ -19,7 +19,7 @@ from .config import (
     default_amr_filter,
 )
 
-from config import Leak
+from .config import Leak
 
 log = logging.getLogger(__name__)
 

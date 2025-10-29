@@ -15,7 +15,7 @@ import pathlib
 import logging
 from typing import List
 
-from config import Leak
+from .config import Leak
 
 log = logging.getLogger(__name__)
 
