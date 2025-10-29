@@ -16,7 +16,7 @@
       "name": "taxon_id",
       "type": "int64",
       "nullable" : false,
-      "description": "NCBI Taxonomy identifier of the orgainsm"
+      "description": "NCBI Taxonomy identifier of the organism"
     },
     {
       "name": "genus",
@@ -46,13 +46,13 @@
       "name": "phenotype",
       "type": "bool",
       "nullable" : false,
-      "description": "Indiciates availaiblity of phenotypic AMR data for this individual assembly/genome"
+      "description": "Indicates availability of phenotypic AMR data for this individual assembly/genome"
     },
     {
       "name": "genotype",
       "type": "bool",
       "nullable" : false,
-      "description": "Indiciates availaiblity of genotype predicted AMR data for this individual assembly/genome"
+      "description": "Indicates availability of genotype predicted AMR data for this individual assembly/genome"
     }
   ]
 }

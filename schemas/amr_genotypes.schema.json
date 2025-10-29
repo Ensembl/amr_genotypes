@@ -40,7 +40,7 @@
       "name": "taxon_id",
       "type": "int64",
       "nullable" : false,
-      "description": "NCBI Taxonomy identifier of the orgainsm"
+      "description": "NCBI Taxonomy identifier of the organism"
     },
     {
       "name": "region",
@@ -166,7 +166,7 @@
       "name": "evidence_description",
       "type": "string",
       "nullable" : true,
-      "description": "Evidence desdcription supporting the predicted AMR resistance"
+      "description": "Evidence description supporting the predicted AMR resistance"
     }
   ]
 }
