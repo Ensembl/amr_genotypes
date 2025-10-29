@@ -1,5 +1,13 @@
 from pathlib import Path
 
+from enum import Enum
+class Leak(Enum):
+    NONE = 0
+    SKIP_ANTIBIOTIC_LOOKUP = 1
+    SKIP_ASSEMBLY_LOOKUP = 2
+    SKIP_GFF_PROCESSING = 3
+    SKIP_WRITING = 4
+
 # Default parser attributes
 default_gff_filter = "CDS"
 default_amr_filter = "AMR"

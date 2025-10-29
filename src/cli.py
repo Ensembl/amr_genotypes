@@ -15,6 +15,8 @@ import pathlib
 import logging
 from typing import List
 
+from config import Leak
+
 log = logging.getLogger(__name__)
 
 
@@ -58,10 +60,16 @@ class Cli:
                     amrfinderplus_path=amrfinderplus_path,
                     amrfinderplus_type=self.args.filter,
                     assembly=assembly,
+                    leak=Leak(self.args.leak),
                 )
 
                 try:
                     output = processor.process()
+                    if Leak.SKIP_WRITING == Leak(self.args.leak):
+                        log.info(
+                            f"Skipping writing output for {assembly} as per leak setting"
+                        )
+                        continue
                     amr_csv.write_data(output)
                     assembly_csv.write_data([processor.assembly_summary], flush=True)
                     self.records += len(output)
@@ -134,5 +142,11 @@ class Cli:
             default=default_amr_filter,
             help="Filter AMRFinderPlus records by this element type",
             type=str,
+        )
+        parser.add_argument(
+            "--leak",
+            default=0,
+            type=int,
+            help="Select the part of the code to not run through. Memory leak detection purposes only. 0 = nothing. 1 = skip antibiotic lookup. 2 = skip assembly lookup. 3 = skip processing GFF (open the file still). 4 = skip writing.",
         )
         return parser
