@@ -7,6 +7,7 @@ class Leak(Enum):
     SKIP_ASSEMBLY_LOOKUP = 2
     SKIP_GFF_PROCESSING = 3
     SKIP_WRITING = 4
+    SKIP_ALL_GFF_PROCESSING = 5
 
 # Default parser attributes
 default_gff_filter = "CDS"

@@ -170,6 +170,8 @@ class Processor:
         log.info(
             f"Filtering GFF types '{self.gff_type}' and AMRFinderPlus element types '{self.amrfinderplus_type}'"
         )
+        if self.leak == Leak.SKIP_ALL_GFF_PROCESSING:
+            return output
         with open_file(self.gff_path, mode="rt") as fh:
             for gff_record in GFF.parse(fh, limit_info={"gff_type": [self.gff_type]}):
                 for feature in gff_record.features:

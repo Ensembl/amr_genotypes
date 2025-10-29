@@ -147,6 +147,6 @@ class Cli:
             "--leak",
             default=0,
             type=int,
-            help="Select the part of the code to not run through. Memory leak detection purposes only. 0 = nothing. 1 = skip antibiotic lookup. 2 = skip assembly lookup. 3 = skip processing GFF (open the file still). 4 = skip writing.",
+            help="Select the part of the code to not run through. Memory leak detection purposes only. 0 = nothing. 1 = skip antibiotic lookup. 2 = skip assembly lookup. 3 = skip processing GFF (open the file still). 4 = skip writing. 5. Skip all GFF reading",
         )
         return parser
