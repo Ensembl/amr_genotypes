@@ -3,47 +3,56 @@
     {
       "name": "BioSample_ID",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The unique identifier for the biological sample (e.g., SAMEA1028830)"
     },
     {
       "name": "assembly_ID",
       "type": "string",
-      "nullable" : true
+      "nullable" : false,
+      "description": "The unique accession number of genome assembly (e.g., GCA_001096525.1)"
     },
     {
       "name": "taxon_id",
       "type": "int64",
-      "nullable" : true
+      "nullable" : false,
+      "description": "NCBI Taxonomy identifier of the orgainsm"
     },
     {
       "name": "genus",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The genus of the organism (e.g., Streptococcus)"
     },
     {
       "name": "species",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The species name of the organism"
     },
     {
       "name": "organism",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The full name of the organism (e.g., Streptococcus pneumoniae)"
     },
     {
-      "name": "strain",
+      "name": "isolate",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Isolate information"
     },
     {
       "name": "phenotype",
       "type": "bool",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Indiciates availaiblity of phenotypic AMR data for this individual assembly/genome"
     },
     {
       "name": "genotype",
       "type": "bool",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Indiciates availaiblity of genotype predicted AMR data for this individual assembly/genome"
     }
   ]
 }

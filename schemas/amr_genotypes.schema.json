@@ -3,137 +3,170 @@
     {
       "name": "BioSample_ID",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The unique identifier for the biological sample (e.g., SAMEA1028830)"
     },
     {
       "name": "assembly_ID",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The unique accession number of genome assembly (e.g., GCA_001096525.1)"
     },
     {
       "name": "genus",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The genus of the organism (e.g., Streptococcus)"
     },
     {
       "name": "species",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The species name of the organism"
     },
     {
       "name": "organism",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "The full name of the organism (e.g., Streptococcus pneumoniae)"
     },
     {
-      "name": "strain",
+      "name": "isolate",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Isolate information"
     },
     {
       "name": "taxon_id",
       "type": "int64",
-      "nullable" : false
+      "nullable" : false,
+      "description": "NCBI Taxonomy identifier of the orgainsm"
     },
     {
       "name": "region",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Name of a genomic region"
     },
     {
       "name": "region_start",
       "type": "int64",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Start of the annotated gene"
     },
     {
       "name": "region_end",
       "type": "int64",
-      "nullable" : false
+      "nullable" : false,
+      "description": "End of the annotated gene"
     },
     {
       "name": "strand",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Strand of the annotated gene. '+' indicates the forward strand, '-' indicates the reverse strand"
     },
     {
       "name": "_bin",
       "type": "int64",
-      "nullable" : false
+      "nullable" : false,
+      "description": "UCSC bin number for the genomic region. See [UCSC's wiki](https://genomewiki.ucsc.edu/index.php/Bin_indexing_system) for further details. Internal field"
     },
     {
       "name": "id",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Identifier of the gene"
     },
     {
       "name": "gene_symbol",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Symbol of the gene"
     },
     {
       "name": "amr_element_symbol",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "AMRFinderPlus assigned symbol for the AMR element"
     },
     {
       "name": "element_type",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Broad type of AMR element. Normally set to `AMR`"
     },
     {
       "name": "element_subtype",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Subtype of AMR element. Normally set to `AMR`"
     },
     {
       "name": "class",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Overall class of AMR compound as given by AMRFinderPlus. Normally a broad representation of antibiotics"
     },
     {
       "name": "subclass",
       "type": "string",
-      "nullable" : false
+      "nullable" : false,
+      "description": "Subclass of AMR compound as given by AMRFinderPlus. Can also be set to the same as class"
+    },
+    {
+      "name": "split_subclass",
+      "type": "string",
+      "nullable" : false,
+      "description": "Subclass can represent multiple individual compounds separated by a '/'. This field contains the individual element of subclass."
     },
     {
       "name": "antibiotic_name",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Normalised name of the antibiotic tested (e.g., beta-lactams, trimethoprim-sulfamethoxazole)"
     },
     {
       "name": "antibiotic_abbreviation",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Abbreviation for the antibiotic (e.g. SXT)"
     },
     {
       "name": "antibiotic_ontology",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Ontology ID for the antibiotic (e.g., ARO_3004024)"
     },
     {
       "name": "antibiotic_ontology_link",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Link to ontology entry for the antibiotic"
     },
     {
       "name": "evidence_accession",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Accession number for evidence supporting the predicted AMR resistance"
     },
     {
       "name": "evidence_type",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Type of evidence supporting the predicted AMR resistance"
     },
     {
       "name": "evidence_link",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Link to the evidence supporting the predicted AMR resistance"
     },
     {
       "name": "evidence_description",
       "type": "string",
-      "nullable" : true
+      "nullable" : true,
+      "description": "Evidence desdcription supporting the predicted AMR resistance"
     }
   ]
 }

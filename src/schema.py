@@ -1,4 +1,5 @@
 import pyarrow as pa
+import pandas as pd
 from typing import List
 from pathlib import Path
 from .utils import slurp_json
@@ -28,6 +29,23 @@ def schema_from_list(schema: List[dict]) -> pa.Schema:
         nullable = col.get("nullable", False)
         if col_type is None:
             raise ValueError(f"Unsupported data type: {col['type']}")
-        fields.append(pa.field(col["name"], type=col_type, nullable=nullable))
+        metadata = {"description" : col.get("description", "")}
+        fields.append(pa.field(col["name"], type=col_type, nullable=nullable, metadata=metadata))
 
     return pa.schema(fields)
+
+def schema_to_markdown_table(schema: pa.Schema) -> str:
+    """Generate a Markdown table (Field, Type, Nullable, Description) from a pyarrow Schema."""
+    rows = []
+    for field in schema:
+        desc = ""
+        if field.metadata and b"description" in field.metadata:
+            desc = field.metadata[b"description"].decode("utf-8")
+        rows.append({
+            "Field": field.name,
+            "Type": f"`{str(field.type)}`",
+            "Nullable": "Yes" if field.nullable else "No",
+            "Description": desc
+        })
+    df = pd.DataFrame(rows, columns=["Field", "Type", "Nullable", "Description"])
+    return df.to_markdown(index=False)

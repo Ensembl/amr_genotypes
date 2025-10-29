@@ -5,3 +5,5 @@ requests
 fsspec
 aiohttp
 duckdb
+pandas
+tabulate
