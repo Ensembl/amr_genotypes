@@ -1,12 +1,17 @@
 import pytest
 from pathlib import Path
 from src.processor import Processor
-from src.lookup import Lookup
+from src.lookup import Lookup, LocalAntibioticLookup
 
 
 @pytest.fixture
 def example_data_dir():
-    return Path(__file__).resolve().parent.parent / "example_data"
+    return Path(__file__).resolve().parent / "test_data"
+
+
+@pytest.fixture
+def antibiotic_lookup_file():
+    return Path(__file__).resolve().parent / "test_data" / "antibiotics.csv"
 
 
 expected = {
@@ -19,12 +24,14 @@ expected = {
 
 
 @pytest.mark.vcr()
-def test_parse_file(example_data_dir):
+def test_parse_file(example_data_dir, antibiotic_lookup_file):
     lookup = Lookup()
+    local_antibiotic_lookup = LocalAntibioticLookup(antibiotic_lookup_file)
     gff = example_data_dir / "GCA_000091005_annotations.gff"
     processor = Processor.default_processor(
         lookup=lookup,
         gff_path=gff,
+        local_antibiotic_lookup=local_antibiotic_lookup,
     )
     output = processor.process()
     assert len(output) == 4
@@ -39,6 +46,12 @@ def test_parse_file(example_data_dir):
     assert f.get("region_start") == 3706
     assert f.get("region_end") == 4521
     assert f.get("strand") == "+"
+    assert f.get("class") == "AMINOGLYCOSIDE"
+    assert f.get("subclass") == "KANAMYCIN"
+    assert f.get("split_subclass") == "KANAMYCIN"
+    assert f.get("antibiotic_name") == "kanamycin A"
+    assert f.get("antibiotic_abbreviation") == "KAN"
+    assert f.get("antibiotic_ontology") == "ARO_0000049"
 
     assert (
         f.get("antibiotic_ontology_link")

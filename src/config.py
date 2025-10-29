@@ -11,7 +11,7 @@ default_output_columns = [
     "genus",
     "species",
     "organism",
-    "strain",
+    "isolate",
     "taxon_id",
     "region",
     "region_start",
@@ -25,8 +25,9 @@ default_output_columns = [
     "element_subtype",
     "class",
     "subclass",
-    "antibioticName",
-    "antibioticAbbreviation",
+    "spilit_subclass",
+    "antibiotic_name",
+    "antibiotic_abbreviation",
     "antibiotic_ontology",
     "antibiotic_ontology_link",
     "evidence_accession",
@@ -54,7 +55,7 @@ assembly_fields = [
     "genus",
     "species",
     "organism",
-    "strain",
+    "isolate",
     "phenotype",
     "genotype",
 ]
@@ -73,6 +74,11 @@ default_feature_fields = [
 parquet = {
     "compression": "zstd",
     "compression_level": 3,
+}
+
+species_names_override = {
+    {"Salmonella enterica subsp. enterica serovar Kentucky": "Salmonella enterica"},
+    {"Salmonella enterica subsp. enterica serovar Hadar": "Salmonella enterica"},
 }
 
 antibiotics_config = Path(__file__).parent.parent / "configs" / "antibiotics.csv"

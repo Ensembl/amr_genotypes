@@ -17,6 +17,7 @@ from .config import (
     default_feature_fields,
     default_gff_filter,
     default_amr_filter,
+    species_names_override,
 )
 
 log = logging.getLogger(__name__)
@@ -165,13 +166,16 @@ class Processor:
                         location = feature.location
                         bin = bin_from_range_extended(location.start, location.end)
                         strand = "-" if location.strand == -1 else "+"
+                        species = assembly_obj.get("species")
+                        if species in species_names_override:
+                            species = species_names_override[species]
                         record = {
                             "assembly_ID": assembly_obj.get("assembly_ID"),
                             "BioSample_ID": assembly_obj.get("BioSample_ID"),
                             "genus": assembly_obj.get("genus"),
-                            "species": assembly_obj.get("species"),
+                            "species": species,
                             "organism": assembly_obj.get("species"),
-                            "strain": assembly_obj.get("strain"),
+                            "isolate": assembly_obj.get("strain"),
                             "taxon_id": assembly_obj.get("taxon_id"),
                             "region": gff_record.id,
                             "region_start": int(location.start) + 1,
@@ -217,6 +221,7 @@ class Processor:
                             )
                             for compound in compounds:
                                 new_record = copy.deepcopy(record)
+                                new_record["split_subclass"] = compound
                                 if amrfinder.get("Subclass") != "NA":
                                     compound_obj = (
                                         self.local_antibiotic_lookup.convert_antibiotic(
@@ -230,14 +235,14 @@ class Processor:
                                         )
                                     # Both lookups failed
                                     if compound_obj is None:
-                                        record["antibioticName"] = ""
+                                        record["antibiotic_name"] = ""
                                         record["antibiotic_ontology_link"] = ""
                                     # Successful lookup
                                     else:
                                         antibiotic_name = compound_obj.get("label")
-                                        new_record["antibioticName"] = antibiotic_name
+                                        new_record["antibiotic_name"] = antibiotic_name
                                         # Abbreviations are only found locally
-                                        new_record["antibioticAbbreviation"] = (
+                                        new_record["antibiotic_abbreviation"] = (
                                             compound_obj.get("abbreviation", "")
                                         )
                                         new_record["antibiotic_ontology"] = (
@@ -248,7 +253,7 @@ class Processor:
                                         )
                                 output.append(new_record)
                         else:
-                            record["antibioticName"] = ""
+                            record["antibiotic_name"] = ""
                             record["antibiotic_ontology_link"] = ""
                             output.append(record)
         log.info(f"Processed {len(output)} AMR records")
