@@ -19,8 +19,6 @@ from .config import (
     default_amr_filter,
 )
 
-from config import Leak
-
 log = logging.getLogger(__name__)
 
 ncbi_evidence_link = "https://www.ncbi.nlm.nih.gov/genome/annotation_prok/evidence/"
@@ -37,7 +35,6 @@ class Processor:
         gff_type: str = default_gff_filter,
         amrfinderplus_type: str = default_amr_filter,
         assembly: str = None,
-        leak: Leak = Leak.NONE,
     ):
         if amrfinderplus_path is None:
             amrfinderplus_path = Processor.find_amrfinderplus_tsv(gff_path)
@@ -51,7 +48,6 @@ class Processor:
             amrfinderplus_path=amrfinderplus_path,
             amrfinderplus_type=amrfinderplus_type,
             assembly=assembly,
-            leak=leak,
         )
         return processor
 
@@ -120,7 +116,6 @@ class Processor:
         amrfinderplus_path: str = None,
         amrfinderplus_type: str = default_amr_filter,
         assembly: str = None,
-        leak: Leak = Leak.NONE,
     ):
         """Initalise the processor module
 
@@ -147,7 +142,6 @@ class Processor:
             self.assembly = assembly
         else:
             self.assembly = Processor.gff_path_to_assembly(gff_path)
-        self.leak = leak
 
     def process(self) -> List[Dict[str, any]]:
         log.info(
@@ -156,25 +150,13 @@ class Processor:
         log.info(f"Parsing AMRFinderPlus TSV for {self.assembly}")
         amr_records = self.parse_amrfinderplus_tsv()
         output = []
-        if self.leak == Leak.SKIP_ASSEMBLY_LOOKUP:
-            assembly_obj = {
-                "assembly_ID": self.assembly,
-                "BioSample_ID": "",
-                "genus": "",
-                "species": "",
-                "strain": "",
-                "taxon_id": "",
-            }
-        else:
-            assembly_obj = self.lookup.assembly_summary(self.assembly)
+        assembly_obj = self.lookup.assembly_summary(self.assembly)
         log.info(
             f"Filtering GFF types '{self.gff_type}' and AMRFinderPlus element types '{self.amrfinderplus_type}'"
         )
         with open_file(self.gff_path, mode="rt") as fh:
             for gff_record in GFF.parse(fh, limit_info={"gff_type": [self.gff_type]}):
                 for feature in gff_record.features:
-                    if self.leak == Leak.SKIP_GFF_PROCESSING:
-                        continue
                     if (
                         "amrfinderplus_element_symbol" in feature.qualifiers
                         and feature.qualifiers["element_type"][0]
@@ -236,19 +218,16 @@ class Processor:
                             for compound in compounds:
                                 new_record = copy.deepcopy(record)
                                 if amrfinder.get("Subclass") != "NA":
-                                    if self.leak == Leak.SKIP_ANTIBIOTIC_LOOKUP:
-                                        compound_obj = None
-                                    else:
-                                        compound_obj = (
-                                            self.local_antibiotic_lookup.convert_antibiotic(
-                                                compound
-                                            )
+                                    compound_obj = (
+                                        self.local_antibiotic_lookup.convert_antibiotic(
+                                            compound
                                         )
-                                        if compound_obj is None:
-                                            # Try the REST lookup
-                                            compound_obj = self.lookup.convert_antibiotic(
-                                                compound
-                                            )
+                                    )
+                                    if compound_obj is None:
+                                        # Try the REST lookup
+                                        compound_obj = self.lookup.convert_antibiotic(
+                                            compound
+                                        )
                                     # Both lookups failed
                                     if compound_obj is None:
                                         record["antibioticName"] = ""
