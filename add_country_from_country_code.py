@@ -22,6 +22,13 @@ def load_duckdb(con, args) -> None:
         "create table country_codes as select * from read_csv(?)",
         [str(args.country_codes)],
     )
+    print(f"Pre-compute names")
+    con.execute('ALTER TABLE country_codes ADD COLUMN amr_name VARCHAR')
+    con.execute('UPDATE country_codes SET amr_name = coalesce("UNTERM English Short", "CLDR display name")')
+    # Remove anything in parentheses from the end of the country name
+    con.execute("UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\(.+?\\)', '')")
+    # Remove asterisks and extra spaces
+    con.execute("UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\\*+', '')")
 
 
 def update(con, args) -> None:
@@ -31,9 +38,9 @@ def update(con, args) -> None:
     con.execute(f"ALTER TABLE {table_name} ADD COLUMN {target_column} VARCHAR")
     con.execute(
         f"""
-UPDATE {table_name} set {target_column} = cc.official_name_en
+UPDATE {table_name} set {target_column} = cc.amr_name
 FROM country_codes cc
-WHERE input.{iso_code_column} = cc."ISO3166-1-Alpha-3"
+WHERE {table_name}.{iso_code_column} = cc."ISO3166-1-Alpha-3"
 """
     )
     con.commit()
