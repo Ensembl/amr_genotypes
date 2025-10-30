@@ -1,4 +1,4 @@
-# AMR Search & Retrieval Guide for EMBL-EBI
+# AMR Search & Retrieval Guide at EMBL-EBI
 
 ## What is AMR data?
 
