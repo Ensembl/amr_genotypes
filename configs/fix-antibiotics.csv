@@ -1,0 +1,27 @@
+subclass,ontology,id,label,iri,short_form,ontology_link
+QUINOLONE,aro,ARO:0000001,fluoroquinolone antibiotic,http://purl.obolibrary.org/obo/ARO_0000001,ARO_0000001,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000001
+BLEOMYCIN,aro,ARO:0000053,bleomycin,http://purl.obolibrary.org/obo/ARO_0000053,ARO_0000053,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000053
+NARASIN,aro,ARO:3007471,narasin,http://purl.obolibrary.org/obo/ARO_3007471,ARO_3007471,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3007471
+FOSMIDOMYCIN,aro,ARO:3000758,fosmidomycin,http://purl.obolibrary.org/obo/ARO_3000758,ARO_3000758,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000758
+MUPIROCIN,aro,ARO:3000554,mupirocin,http://purl.obolibrary.org/obo/ARO_3000554,ARO_3000554,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000554
+SULFONAMIDE,aro,ARO:3000282,sulfonamide antibiotic,http://purl.obolibrary.org/obo/ARO_3000282,ARO_3000282,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000282
+CARBAPENEM,aro,ARO:0000020,carbapenem,http://purl.obolibrary.org/obo/ARO_0000020,ARO_0000020,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000020
+AMINOGLYCOSIDE,aro,ARO:0000016,aminoglycoside antibiotic,http://purl.obolibrary.org/obo/ARO_0000016,ARO_0000016,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000016
+PHENICOL,aro,ARO:3000387,phenicol antibiotic,http://purl.obolibrary.org/obo/ARO_3000387,ARO_3000387,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000387
+PLEUROMUTILIN,aro,ARO:3001317,pleuromutilin,http://purl.obolibrary.org/obo/ARO_3001317,ARO_3001317,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3001317
+AMINOCOUMARIN,aro,ARO:3000103,aminocoumarin antibiotic,http://purl.obolibrary.org/obo/ARO_3000103,ARO_3000103,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000103
+ISONIAZID,aro,ARO:3000520,isoniazid,http://purl.obolibrary.org/obo/ARO_3000520,ARO_3000520,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000520
+FOSFOMYCIN,aro,ARO:0000025,fosfomycin,http://purl.obolibrary.org/obo/ARO_0000025,ARO_0000025,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000025
+STREPTOTHRICIN,aro,ARO:0000012,streptothricin,http://purl.obolibrary.org/obo/ARO_0000012,ARO_0000012,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000012
+COLISTIN,aro,ARO:0000067,colistin,http://purl.obolibrary.org/obo/ARO_0000067,ARO_0000067,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000067
+BETA-LACTAM,aro,ARO:3000007,beta-lactam antibiotic,http://purl.obolibrary.org/obo/ARO_3000007,ARO_3000007,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000007
+LINCOSAMIDE,aro,ARO:0000017,lincosamide antibiotic,http://purl.obolibrary.org/obo/ARO_0000017,ARO_0000017,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000017
+TETRACYCLINE,aro,ARO:0000051,tetracycline,http://purl.obolibrary.org/obo/ARO_0000051,ARO_0000051,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000051
+FLUOROQUINOLONE,aro,ARO:0000001,fluoroquinolone antibiotic,http://purl.obolibrary.org/obo/ARO_0000001,ARO_0000001,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000001
+RIFAMYCIN,aro,ARO:3000157,rifamycin antibiotic,http://purl.obolibrary.org/obo/ARO_3000157,ARO_3000157,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000157
+TRICLOSAN,aro,ARO:3000870,triclosan,http://purl.obolibrary.org/obo/ARO_3000870,ARO_3000870,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000870
+SALINOMYCIN,aro,ARO:3007547,salinomycin,http://purl.obolibrary.org/obo/ARO_3007547,ARO_3007547,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3007547
+TRIMETHOPRIM,aro,ARO:3000188,trimethoprim,http://purl.obolibrary.org/obo/ARO_3000188,ARO_3000188,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000188
+STREPTOGRAMIN,aro,ARO:0000026,streptogramin antibiotic,http://purl.obolibrary.org/obo/ARO_0000026,ARO_0000026,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_0000026
+FUSIDIC ACID,aro,ARO:3000759,fusidic acid,http://purl.obolibrary.org/obo/ARO_3000759,ARO_3000759,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000759
+FUSIDIC_ACID,aro,ARO:3000759,fusidic acid,http://purl.obolibrary.org/obo/ARO_3000759,ARO_3000759,https://www.ebi.ac.uk/ols4/ontologies/aro/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FARO_3000759

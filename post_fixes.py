@@ -25,12 +25,6 @@ species_names_override = [
     ["Salmonella enterica", "Salmonella enterica subsp. enterica serovar Kentucky"],
     ["Salmonella enterica", "Salmonella enterica subsp. enterica serovar Hadar"],
 ]
-genotype_column_renames = [
-    ["strain", "isolate"],
-    ["antibioticAbbreviation", "antibiotic_abbreviation"],
-    ["antibioticName", "antibiotic_name"],
-]
-
 
 def update_genotype(con) -> None:
     print("Updating genotype species names from phenotype")
@@ -60,9 +54,9 @@ WHERE taxon_id IS NULL
     con.execute(
         """
 UPDATE genotype
-SET antibioticName = a.label, antibiotic_ontology = replace(a.id, ':', '_'), antibiotic_ontology_link = a.ontology_link
+SET antibiotic_name = a.label, antibiotic_ontology = replace(a.id, ':', '_'), antibiotic_ontology_link = a.ontology_link
 FROM fix_antibiotics a
-WHERE genotype.subclass = a.subclass and antibioticName = ''
+WHERE genotype.subclass = a.subclass and antibiotic_name = ''
 """
     )
 
@@ -72,22 +66,17 @@ WHERE genotype.subclass = a.subclass and antibioticName = ''
     )
 
     print(
-        "Updating genotype with known antibioticAbbreviation from phenotype antibiotic_ontology"
+        "Updating genotype with known antibiotic_abbreviation from phenotype antibiotic_ontology"
     )
     update_antib = """
 UPDATE genotype
-SET antibioticAbbreviation = IF(aa.antibiotic_abbreviation IS NULL, '', aa.antibiotic_abbreviation)
+SET antibiotic_abbreviation = IF(aa.antibiotic_abbreviation IS NULL, '', aa.antibiotic_abbreviation)
 FROM antibiotic_abbreviation aa
 WHERE genotype.antibiotic_ontology = aa.antibiotic_ontology
 AND genotype.antibioticAbbreviation = ''
 AND genotype.antibiotic_ontology != ''
 """
     con.execute(update_antib)
-
-    for cols in genotype_column_renames:
-        print(f"Changing column from genotype.{cols[0]} to genotype.{cols[1]}")
-        con.execute(f"ALTER TABLE genotype RENAME {cols[0]} TO {cols[1]}")
-
     con.commit()
 
 
@@ -97,7 +86,7 @@ def update_phenotype(con) -> None:
     for ids in affected_ids:
         query = "UPDATE phenotype SET BioSample_ID = ? WHERE BioSample_ID = ?"
         con.execute(query, ids)
-    print("Dropping unwatned columns from phenotype")
+    print("Dropping unwanted columns from phenotype")
     columns = ["gen_measurement", "gen_antibiotic_ontology"]
     for col in columns:
         print(f" > Dropping column phenotype.{col}")
@@ -236,7 +225,7 @@ def arg_parser():
         "--antibiotic-lookup",
         type=Path,
         required=True,
-        help="CSV of additional antibiotic lookups",
+        help="CSV of additional antibiotic lookups. Not to be confused with the offline index of antibiotics (correct file is called fix-antibiotics.csv)",
     )
     return parser
 
