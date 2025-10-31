@@ -77,8 +77,8 @@ parquet = {
 }
 
 species_names_override = {
-    {"Salmonella enterica subsp. enterica serovar Kentucky": "Salmonella enterica"},
-    {"Salmonella enterica subsp. enterica serovar Hadar": "Salmonella enterica"},
+    "Salmonella enterica subsp. enterica serovar Kentucky": "Salmonella enterica",
+    "Salmonella enterica subsp. enterica serovar Hadar": "Salmonella enterica",
 }
 
 antibiotics_config = Path(__file__).parent.parent / "configs" / "antibiotics.csv"
