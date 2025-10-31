@@ -73,7 +73,7 @@ UPDATE genotype
 SET antibiotic_abbreviation = IF(aa.antibiotic_abbreviation IS NULL, '', aa.antibiotic_abbreviation)
 FROM antibiotic_abbreviation aa
 WHERE genotype.antibiotic_ontology = aa.antibiotic_ontology
-AND genotype.antibioticAbbreviation = ''
+AND genotype.antibiotic_abbreviation = ''
 AND genotype.antibiotic_ontology != ''
 """
     con.execute(update_antib)
