@@ -22,25 +22,41 @@ def load_duckdb(con, args) -> None:
         "create table country_codes as select * from read_csv(?)",
         [str(args.country_codes)],
     )
+    print(f"Loading UNSD table")
+    con.execute(
+        "create table unsd as select * from read_csv(?, delim = ';', header = true)",
+        [str(args.unsd)],
+    )
     print(f"Pre-compute names")
     con.execute('ALTER TABLE country_codes ADD COLUMN amr_name VARCHAR')
     con.execute('UPDATE country_codes SET amr_name = coalesce("UNTERM English Short", "CLDR display name")')
     # Remove anything in parentheses from the end of the country name
-    con.execute("UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\(.+?\\)', '')")
+    con.execute("UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\\(.+?\\)', '')")
     # Remove asterisks and extra spaces
     con.execute("UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\\*+', '')")
 
 
 def update(con, args) -> None:
-    target_column = args.country_column
     iso_code_column = args.iso_code_column
     print("Updating country names from country codes")
-    con.execute(f"ALTER TABLE {table_name} ADD COLUMN {target_column} VARCHAR")
+    con.execute(f"ALTER TABLE {table_name} ADD COLUMN country VARCHAR") # amr_name
+    con.execute(f"ALTER TABLE {table_name} ADD COLUMN geographical_region VARCHAR") # Region Name
+    con.execute(f"ALTER TABLE {table_name} ADD COLUMN geographical_subregion VARCHAR") # Sub-region Name
     con.execute(
         f"""
-UPDATE {table_name} set {target_column} = cc.amr_name
+UPDATE {table_name} SET
+country = cc.amr_name
 FROM country_codes cc
 WHERE {table_name}.{iso_code_column} = cc."ISO3166-1-Alpha-3"
+"""
+    )
+    con.execute(
+        f"""
+UPDATE {table_name} SET
+geographical_region = un."Region Name",
+geographical_subregion = un."Sub-region Name"
+FROM unsd un
+WHERE {table_name}.{iso_code_column} = un."ISO-alpha3 Code"
 """
     )
     con.commit()
@@ -95,18 +111,17 @@ def arg_parser():
         help="CSV of country codes to country names. Taken from https://github.com/datasets/country-codes. Can path directly to the raw CSV on GitHub.",
     )
     parser.add_argument(
+        "--unsd",
+        type=str,
+        required=True,
+        help="Secondary lookup of CSV of country codes to country names. Can be obtained from https://unstats.un.org/unsd/methodology/m49/overview/",
+    )
+    parser.add_argument(
         "--iso-code-column",
         type=str,
         required=False,
         default=default_iso_code_column,
         help="Column which contains the ISO country codes",
-    )
-    parser.add_argument(
-        "--country-column",
-        type=str,
-        required=False,
-        default=default_country_column,
-        help="Column which will contain the country name in the output file",
     )
     parser.add_argument(
         "--drop-columns",
