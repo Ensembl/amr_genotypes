@@ -27,8 +27,8 @@ def convert_csv_to_parquet(
         f"Found {len(csv_files)} files matching '{pattern}'. Converting to Parquet..."
     )
     convert_opts = pv.ConvertOptions(
-        column_types={f.name: f.type for f in schema},
-        column_nullability={f.name: f.nullable for f in schema},
+        column_types=schema,
+        null_values=[f.name for f in schema if f.nullable],
         true_values=["True", "true", "yes"],
         false_values=["False", "false", "no"],
         strings_can_be_null=True,
@@ -36,7 +36,7 @@ def convert_csv_to_parquet(
 
     parquet_files = []
     for csv_file in csv_files:
-        table = pv.read_csv(csv_file, convert_opts=convert_opts)
+        table = pv.read_csv(csv_file, convert_options=convert_opts)
         parquet_path = output_dir / f"{csv_file.stem}.parquet"
         pq.write_table(table, parquet_path)
         parquet_files.append(parquet_path)
