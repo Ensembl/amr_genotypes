@@ -25,7 +25,7 @@ default_output_columns = [
     "element_subtype",
     "class",
     "subclass",
-    "spilit_subclass",
+    "split_subclass",
     "antibiotic_name",
     "antibiotic_abbreviation",
     "antibiotic_ontology",
