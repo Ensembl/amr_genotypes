@@ -1,0 +1,304 @@
+{
+  "schema": [
+    {
+      "name": "BioSample_ID",
+      "type": "string",
+      "nullable": false,
+      "description": "The unique identifier for the biological sample (e.g. SAMEA1028830)"
+    },
+    {
+      "name": "assembly_ID",
+      "type": "string",
+      "nullable" : false,
+      "description": "The unique accession number of genome assembly (e.g., GCA_001096525.1)"
+    },
+    {
+      "name": "antibiotic_ontology",
+      "type": "string",
+      "nullable": true,
+      "description": "An ontology ID for the antibiotic (e.g. ARO_3004024)"
+    },
+    {
+      "name": "INSDC_secondary_accession",
+      "type": "string",
+      "nullable": true,
+      "description": "The secondary accession number in the International Nucleotide Sequence Database Collaboration (INSDC)"
+    },
+    {
+      "name": "collection_year",
+      "type": "int32",
+      "nullable": true,
+      "description": "The year the sample was collected"
+    },
+    {
+      "name": "ISO_country_code",
+      "type": "string",
+      "nullable": true,
+      "description": "The 3-letter ISO country code where the sample was collected (e.g. THA for Thailand)"
+    },
+    {
+      "name": "host",
+      "type": "string",
+      "nullable": true,
+      "description": "The organism the sample was isolated from (e.g. Homo sapiens)"
+    },
+    {
+      "name": "host_age",
+      "type": "string",
+      "nullable": true,
+      "description": "The age of the host (empty/NULL in the sample data, but should be a string to allow for various formats or NULLs)"
+    },
+    {
+      "name": "host_sex",
+      "type": "string",
+      "nullable": true,
+      "description": "The sex of the host (empty/NULL in the sample data)"
+    },
+    {
+      "name": "isolate",
+      "type": "string",
+      "nullable": true,
+      "description": "A unique identifier for the specific isolate (e.g. SMRU2695)"
+    },
+    {
+      "name": "isolation_source",
+      "type": "string",
+      "nullable": true,
+      "description": "The specific anatomical source or environment the isolate came from (e.g. nasopharynx)"
+    },
+    {
+      "name": "isolation_source_category",
+      "type": "string",
+      "nullable": true,
+      "description": "The general category of the isolation source (e.g. respiratory tract)"
+    },
+    {
+      "name": "lat_lon",
+      "type": "string",
+      "nullable": true,
+      "description": "Geographic coordinates (latitude and longitude)"
+    },
+    {
+      "name": "AMR_associated_publications",
+      "type": "string",
+      "nullable": true,
+      "description": "The PubMed ID of the publication associated with the data"
+    },
+    {
+      "name": "used_ECOFF",
+      "type": "string",
+      "nullable": true,
+      "description": "Indicates if the Epidemiological Cut-Off (ECOFF) was used (empty/NULL in the sample data)"
+    },
+    {
+      "name": "database",
+      "type": "string",
+      "nullable": true,
+      "description": "Database of annotation"
+    },
+    {
+      "name": "antibiotic_name",
+      "type": "string",
+      "nullable": true,
+      "description": "The name of the antibiotic tested (e.g. beta-lactams, trimethoprim-sulfamethoxazole)"
+    },
+    {
+      "name": "astStandard",
+      "type": "string",
+      "nullable": true,
+      "description": "The standard or guideline used for Antimicrobial Susceptibility Testing (e.g. CLSI, EUCAST)"
+    },
+    {
+      "name": "laboratoryTypingMethod",
+      "type": "string",
+      "nullable": true,
+      "description": "The method used to test the antibiotic sensitivity (e.g. disk diffusion, E-test)"
+    },
+    {
+      "name": "measurement",
+      "type": "string",
+      "nullable": true,
+      "description": "The raw measurement value, typically MIC or zone size (e.g. 2, 1, 0.5). FLOAT is used for non-integer numeric values"
+    },
+    {
+      "name": "measurement_sign",
+      "type": "string",
+      "nullable": true,
+      "description": "The sign indicating the nature of the measurement (e.g. '==' for exact value, or '>', '<')"
+    },
+    {
+      "name": "measurement_units",
+      "type": "string",
+      "nullable": true,
+      "description": "The units for the measurement (e.g. mg/l)"
+    },
+    {
+      "name": "platform",
+      "type": "string",
+      "nullable": true,
+      "description": "The platform used for analysis (empty/NULL in the sample data)"
+    },
+    {
+      "name": "resistance_phenotype",
+      "type": "string",
+      "nullable": true,
+      "description": "The final result of the interpretation (e.g. susceptible, non-susceptible, resistant)"
+    },
+    {
+      "name": "antibiotic_abbreviation",
+      "type": "string",
+      "nullable": true,
+      "description": "A common abbreviation for the antibiotic (e.g. SXT)"
+    },
+    {
+      "name": "antibiotic_ontology_link",
+      "type": "string",
+      "nullable": true,
+      "description": "Link to the ontology resource for the ID"
+    },
+    {
+      "name": "country",
+      "type": "string",
+      "nullable": true,
+      "description": "Full country name where the sample was collected from. Converted from `ISO_country_code`."
+    },
+    {
+      "name": "geographical_region",
+      "type": "string",
+      "nullable": true,
+      "description": "Geographical region as defined by UN M49. e.g Asia, Europe, Oceania, Africa or Americas."
+    },
+    {
+      "name": "geographical_subregion",
+      "type": "string",
+      "nullable": true,
+      "description": "Geographical subregion as defined by UN M49. e.g.Eastern Asia, Northern Europe."
+    },
+    {
+      "name": "genus",
+      "type": "string",
+      "nullable" : false,
+      "description": "The genus of the organism (e.g., Streptococcus)"
+    },
+    {
+      "name": "species",
+      "type": "string",
+      "nullable" : false,
+      "description": "The species name of the organism"
+    },
+    {
+      "name": "organism",
+      "type": "string",
+      "nullable" : false,
+      "description": "The full name of the organism (e.g., Streptococcus pneumoniae)"
+    },
+    {
+      "name": "isolate",
+      "type": "string",
+      "nullable" : true,
+      "description": "Isolate information"
+    },
+    {
+      "name": "taxon_id",
+      "type": "int64",
+      "nullable" : false,
+      "description": "NCBI Taxonomy identifier of the organism"
+    },
+    {
+      "name": "region",
+      "type": "string",
+      "nullable" : false,
+      "description": "Name of a genomic region"
+    },
+    {
+      "name": "region_start",
+      "type": "int64",
+      "nullable" : false,
+      "description": "Start of the annotated gene"
+    },
+    {
+      "name": "region_end",
+      "type": "int64",
+      "nullable" : false,
+      "description": "End of the annotated gene"
+    },
+    {
+      "name": "strand",
+      "type": "string",
+      "nullable" : false,
+      "description": "Strand of the annotated gene. '+' indicates the forward strand, '-' indicates the reverse strand"
+    },
+    {
+      "name": "id",
+      "type": "string",
+      "nullable" : false,
+      "description": "Identifier of the gene"
+    },
+    {
+      "name": "gene_symbol",
+      "type": "string",
+      "nullable" : false,
+      "description": "Symbol of the gene"
+    },
+    {
+      "name": "amr_element_symbol",
+      "type": "string",
+      "nullable" : false,
+      "description": "AMRFinderPlus assigned symbol for the AMR element"
+    },
+    {
+      "name": "element_type",
+      "type": "string",
+      "nullable" : false,
+      "description": "Broad type of AMR element. Normally set to `AMR`"
+    },
+    {
+      "name": "element_subtype",
+      "type": "string",
+      "nullable" : false,
+      "description": "Subtype of AMR element. Normally set to `AMR`"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "nullable" : false,
+      "description": "Overall class of AMR compound as given by AMRFinderPlus. Normally a broad representation of antibiotics"
+    },
+    {
+      "name": "subclass",
+      "type": "string",
+      "nullable" : false,
+      "description": "Subclass of AMR compound as given by AMRFinderPlus. Can also be set to the same as class"
+    },
+    {
+      "name": "split_subclass",
+      "type": "string",
+      "nullable" : false,
+      "description": "Subclass can represent multiple individual compounds separated by a '/'. This field contains the individual element of subclass."
+    },
+    {
+      "name": "evidence_accession",
+      "type": "string",
+      "nullable" : true,
+      "description": "Accession number for evidence supporting the predicted AMR resistance"
+    },
+    {
+      "name": "evidence_type",
+      "type": "string",
+      "nullable" : true,
+      "description": "Type of evidence supporting the predicted AMR resistance"
+    },
+    {
+      "name": "evidence_link",
+      "type": "string",
+      "nullable" : true,
+      "description": "Link to the evidence supporting the predicted AMR resistance"
+    },
+    {
+      "name": "evidence_description",
+      "type": "string",
+      "nullable" : true,
+      "description": "Evidence description supporting the predicted AMR resistance"
+    }
+  ]
+}
