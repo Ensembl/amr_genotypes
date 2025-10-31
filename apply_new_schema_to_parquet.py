@@ -39,7 +39,7 @@ def main():
         if column_name not in table.column_names:
             raise ValueError(f"Column '{column_name}' not found in Parquet file.")
         mask = pc.invert(pc.is_null(table[column_name]))
-        print(f"Filtereing rows where {column_name} is null")
+        print(f"Filtering rows where {column_name} is null")
         table = table.filter(mask)
 
     casted_table = table.cast(schema)
