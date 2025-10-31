@@ -175,7 +175,7 @@ class Processor:
                             "genus": assembly_obj.get("genus"),
                             "species": species,
                             "organism": assembly_obj.get("species"),
-                            "isolate": assembly_obj.get("strain"),
+                            "isolate": assembly_obj.get("isolate"),
                             "taxon_id": assembly_obj.get("taxon_id"),
                             "region": gff_record.id,
                             "region_start": int(location.start) + 1,

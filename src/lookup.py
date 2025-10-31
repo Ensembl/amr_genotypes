@@ -182,7 +182,7 @@ class Lookup:
 
         Returns:
             Dict[str, any]: A dictionary including information including
-            'Assembly_ID', 'taxon_id', 'scientific_name', 'genus', 'strain', and 'Biosample_ID'.
+            'Assembly_ID', 'taxon_id', 'scientific_name', 'genus', 'isolate', and 'Biosample_ID'.
             If the id is not found an empty dictionary is returned.
         """
         req = self._safe_get(f"https://www.ebi.ac.uk/ena/browser/api/xml/{assembly_id}")
@@ -198,7 +198,7 @@ class Lookup:
 
         Returns:
             Dict[str, any]: A dictionary including information including
-            'Assembly_ID', 'taxon_id', 'scientific_name', 'genus', 'strain', and 'Biosample_ID'.
+            'Assembly_ID', 'taxon_id', 'scientific_name', 'genus', 'isolate', and 'Biosample_ID'.
             If the id is not found an empty dictionary is returned.
         """
         tree = ElementTree.fromstring(content)
@@ -212,7 +212,7 @@ class Lookup:
         taxon = tree.find(".//TAXON")
         scientific_name = taxon.findtext("SCIENTIFIC_NAME")
         genus = scientific_name.split(" ")[0]
-        strain = taxon.findtext("STRAIN", default="")
+        isolate = taxon.findtext("STRAIN", default="")
         taxon_id = int(taxon.findtext("TAXON_ID").strip())
         biosample = tree.findtext(".//SAMPLE_REF/IDENTIFIERS/PRIMARY_ID")
         return {
@@ -221,7 +221,7 @@ class Lookup:
             "species": scientific_name,
             "organism": scientific_name,
             "genus": genus,
-            "strain": strain,
+            "isolate": isolate,
             "BioSample_ID": biosample,
         }
 
@@ -240,7 +240,7 @@ class Lookup:
         ).json()
         scientific_name = biosample_obj["characteristics"]["organism"][0]["text"]
         genus = scientific_name.split(" ")[0] if scientific_name else ""
-        strain = ""
+        isolate = ""
         taxon_id = biosample_obj["taxId"]
         return {
             "assembly_ID": assembly_ID,
@@ -248,7 +248,7 @@ class Lookup:
             "species": scientific_name,
             "organism": scientific_name,
             "genus": genus,
-            "strain": strain,
+            "isolate": isolate,
             "BioSample_ID": biosample,
         }
 
