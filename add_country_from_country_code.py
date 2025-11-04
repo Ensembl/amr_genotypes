@@ -28,20 +28,30 @@ def load_duckdb(con, args) -> None:
         [str(args.unsd)],
     )
     print(f"Pre-compute names")
-    con.execute('ALTER TABLE country_codes ADD COLUMN amr_name VARCHAR')
-    con.execute('UPDATE country_codes SET amr_name = coalesce("UNTERM English Short", "CLDR display name")')
+    con.execute("ALTER TABLE country_codes ADD COLUMN amr_name VARCHAR")
+    con.execute(
+        'UPDATE country_codes SET amr_name = coalesce("UNTERM English Short", "CLDR display name")'
+    )
     # Remove anything in parentheses from the end of the country name
-    con.execute("UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\\(.+?\\)', '')")
+    con.execute(
+        "UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\\(.+?\\)', '')"
+    )
     # Remove asterisks and extra spaces
-    con.execute("UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\\*+', '')")
+    con.execute(
+        "UPDATE country_codes SET amr_name = regexp_replace(amr_name, '\\s\\*+', '')"
+    )
 
 
 def update(con, args) -> None:
     iso_code_column = args.iso_code_column
     print("Updating country names from country codes")
-    con.execute(f"ALTER TABLE {table_name} ADD COLUMN country VARCHAR") # amr_name
-    con.execute(f"ALTER TABLE {table_name} ADD COLUMN geographical_region VARCHAR") # Region Name
-    con.execute(f"ALTER TABLE {table_name} ADD COLUMN geographical_subregion VARCHAR") # Sub-region Name
+    con.execute(f"ALTER TABLE {table_name} ADD COLUMN country VARCHAR")  # amr_name
+    con.execute(
+        f"ALTER TABLE {table_name} ADD COLUMN geographical_region VARCHAR"
+    )  # Region Name
+    con.execute(
+        f"ALTER TABLE {table_name} ADD COLUMN geographical_subregion VARCHAR"
+    )  # Sub-region Name
     con.execute(
         f"""
 UPDATE {table_name} SET

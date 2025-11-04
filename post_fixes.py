@@ -26,6 +26,7 @@ species_names_override = [
     ["Salmonella enterica", "Salmonella enterica subsp. enterica serovar Hadar"],
 ]
 
+
 def update_genotype(con) -> None:
     print("Updating genotype species names from phenotype")
     query = """
