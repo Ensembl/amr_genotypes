@@ -60,39 +60,44 @@ FROM fix_antibiotics a
 WHERE genotype.subclass = a.subclass and antibiotic_name = ''
 """
     )
-
-    print("Creating quick lookup table")
-    con.execute(
-        "CREATE TABLE antibiotic_abbreviation AS SELECT DISTINCT antibiotic_ontology, antibiotic_abbreviation FROM PHENOTYPE"
-    )
-
-    print(
-        "Updating genotype with known antibiotic_abbreviation from phenotype antibiotic_ontology"
-    )
-    update_antib = """
-UPDATE genotype
-SET antibiotic_abbreviation = IF(aa.antibiotic_abbreviation IS NULL, '', aa.antibiotic_abbreviation)
-FROM antibiotic_abbreviation aa
-WHERE genotype.antibiotic_ontology = aa.antibiotic_ontology
-AND genotype.antibiotic_abbreviation = ''
-AND genotype.antibiotic_ontology != ''
-"""
-    con.execute(update_antib)
+    drop_antibiotic_abbreviations(con)
     con.commit()
 
 
 def update_phenotype(con) -> None:
-    print(f"Updating known BioSample_ID data error in phenotype table")
+    table = "phenotype"
+    print(f"Updating known BioSample_ID data error in {table} table")
     affected_ids = [["SAMEA1028830", "8830"]]
     for ids in affected_ids:
-        query = "UPDATE phenotype SET BioSample_ID = ? WHERE BioSample_ID = ?"
+        query = f"UPDATE {table} SET BioSample_ID = ? WHERE BioSample_ID = ?"
         con.execute(query, ids)
-    print("Dropping unwanted columns from phenotype")
-    columns = ["gen_measurement", "gen_antibiotic_ontology"]
-    for col in columns:
-        print(f" > Dropping column phenotype.{col}")
-        con.execute(f"ALTER TABLE phenotype DROP COLUMN IF EXISTS {col}")
+    drop_generated_columns(con, table)
+    drop_antibiotic_abbreviations(con)
     con.commit()
+
+
+def drop_generated_columns(con, table) -> None:
+    print(f"Dropping generated columns from {table}")
+    print(f" > Finding columns in {table} with a 'gen_' prefix")
+    columns = con.execute(
+        """
+SELECT column_name
+FROM duckdb_columns()
+WHERE table_name = ?
+AND column_name LIKE ?
+""",
+        (table, "gen\\_%"),
+    ).fetchall()
+    for col in columns:
+        print(f" > Dropping column {table}.{col[0]}")
+        con.execute(f"ALTER TABLE {table} DROP COLUMN IF EXISTS {col[0]}")
+
+
+def drop_antibiotic_abbreviations(con, table) -> None:
+    col = "antibiotic_abbreviation"
+    print(f"Dropping {col} column from {table}")
+    con.execute(f"ALTER TABLE {table} DROP COLUMN IF EXISTS {col}")
+    print(f" > Done")
 
 
 def create_assembly(con) -> None:
@@ -223,6 +228,11 @@ def arg_parser():
         help="Do not write to disk any results",
     )
     parser.add_argument(
+        "--write-assembly",
+        action=argparse.BooleanOptionalAction,
+        help="Create and write the final joined assembly table. No longer done by default",
+    )
+    parser.add_argument(
         "--antibiotic-lookup",
         type=Path,
         required=True,
@@ -238,7 +248,10 @@ def main():
         load_duckdb(con, args)
         update_phenotype(con)
         update_genotype(con)
-        create_assembly(con)
+        if args.write_assembly:
+            create_assembly(con)
+        else:
+            print("Skipping writing out the assembly table")
         if not args.dry_run:
             write_to_disk(con, args)
         else:
