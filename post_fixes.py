@@ -51,6 +51,8 @@ DELETE FROM genotype
 WHERE taxon_id IS NULL
 """
         con.execute(query)
+        
+    drop_generated_columns(con, table)
 
     print("Fixing missing antibiotics")
     con.execute(
@@ -188,7 +190,9 @@ group by g.BioSample_ID, g.assembly_ID, g.genus, g.species
 def write_to_disk(con, args):
     output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
-    tables = ["phenotype", "genotype", "assembly"]
+    tables = ["phenotype", "genotype"]
+    if args.write_assembly:
+        tables.append("assembly")
     for t in tables:
         path = output_dir / f"{t}.parquet"
         print(f"Writing the table {t} out to {path}")
@@ -252,7 +256,7 @@ def main():
         if args.write_assembly:
             create_assembly(con)
         else:
-            print("Skipping writing out the assembly table")
+            print("Skipping creating the assembly table")
         if not args.dry_run:
             write_to_disk(con, args)
         else:
