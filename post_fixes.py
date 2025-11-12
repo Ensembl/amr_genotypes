@@ -46,6 +46,16 @@ WHERE genotype.BioSample_ID = phenotype.BioSample_ID and genotype.assembly_ID = 
         "UPDATE genotype SET species = regexp_replace(species, ?, '') WHERE species LIKE ?",
         ["\\ssubsp\\..+$", "%subsp.%"],
     )
+    print("Removing any 'complex' information from species")
+    con.execute(
+        "UPDATE genotype SET species = regexp_replace(species, ?, '') WHERE species LIKE ?",
+        ["\\scomplex.+$", "%complex%"],
+    )
+    print("Removing any 'variant' information from species")
+    con.execute(
+        "UPDATE genotype SET species = regexp_replace(species, ?, '') WHERE species LIKE ?",
+        ["\\svariant.+$", "%variant%"],
+    )
 
     rows = con.execute(
         "SELECT count(*) FROM genotype where taxon_id IS NULL"
