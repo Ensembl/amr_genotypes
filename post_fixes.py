@@ -58,7 +58,7 @@ WHERE taxon_id IS NULL
 UPDATE genotype
 SET antibiotic_name = a.label, antibiotic_ontology = replace(a.id, ':', '_'), antibiotic_ontology_link = a.ontology_link
 FROM fix_antibiotics a
-WHERE genotype.subclass = a.subclass and antibiotic_name = ''
+WHERE genotype.subclass = a.subclass and genotype.antibiotic_name = ''
 """
     )
     drop_antibiotic_abbreviations(con, table)
