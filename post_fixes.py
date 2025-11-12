@@ -29,6 +29,7 @@ species_names_override = [
 
 def update_genotype(con) -> None:
     print("Updating genotype species names from phenotype")
+    table = 'genotype'
     query = """
 UPDATE genotype 
 SET species = phenotype.species 
@@ -60,7 +61,7 @@ FROM fix_antibiotics a
 WHERE genotype.subclass = a.subclass and antibiotic_name = ''
 """
     )
-    drop_antibiotic_abbreviations(con)
+    drop_antibiotic_abbreviations(con, table)
     con.commit()
 
 
@@ -72,7 +73,7 @@ def update_phenotype(con) -> None:
         query = f"UPDATE {table} SET BioSample_ID = ? WHERE BioSample_ID = ?"
         con.execute(query, ids)
     drop_generated_columns(con, table)
-    drop_antibiotic_abbreviations(con)
+    drop_antibiotic_abbreviations(con, table)
     con.commit()
 
 
