@@ -29,7 +29,7 @@ species_names_override = [
 
 def update_genotype(con) -> None:
     print("Updating genotype species names from phenotype")
-    table = 'genotype'
+    table = "genotype"
     query = """
 UPDATE genotype 
 SET species = phenotype.species 
@@ -41,6 +41,12 @@ WHERE genotype.BioSample_ID = phenotype.BioSample_ID and genotype.assembly_ID = 
         print(f"Applying specific override for {overrides[1]}")
         con.execute("UPDATE genotype SET species =? WHERE species=?", overrides)
 
+        print("Removing any 'subsp.' information from species")
+        con.execute(
+            "UPDATE genotype SET species = regexp_replace(species, ?, '') WHERE species LIKE ?",
+            ["\\ssubsp\\..+$", "%subsp.%"],
+        )
+
     rows = con.execute(
         "SELECT count(*) FROM genotype where taxon_id IS NULL"
     ).fetchone()[0]
@@ -51,7 +57,7 @@ DELETE FROM genotype
 WHERE taxon_id IS NULL
 """
         con.execute(query)
-        
+
     drop_generated_columns(con, table)
 
     print("Fixing missing antibiotics")
