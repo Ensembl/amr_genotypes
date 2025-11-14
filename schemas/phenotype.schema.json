@@ -191,6 +191,18 @@
       "type": "string",
       "nullable": true,
       "description": "Full country name where the sample was collected from. Converted from `ISO_country_code`."
+    },
+    {
+      "name": "geographical_region",
+      "type": "string",
+      "nullable": true,
+      "description": "Geographical region as defined by UN M49. e.g Asia, Europe, Oceania, Africa or Americas."
+    },
+    {
+      "name": "geographical_subregion",
+      "type": "string",
+      "nullable": true,
+      "description": "Geographical subregion as defined by UN M49. e.g.Eastern Asia, Northern Europe."
     }
   ]
 }
