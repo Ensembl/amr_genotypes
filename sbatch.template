@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# RUN ./generate_sbatch.py to get this file filled out
+
+#Submit this script with: sbatch thefilename
+#For more details about each parameter, please check SLURM sbatch documentation https://slurm.schedmd.com/sbatch.html
+
+# Variables to substitute
+# - `BASE_DIR` = where all processed files are being written to
+# - `EMAIL` = email address for you
+# - `JOB_NAME` = name of the job on slurm
+# - `QUEUE` = queue to submit to
+# - `GFF_SOURCE` = directory where GFFs are stored. Use a fully resolved path to help with filtering
+
+#####
+# Expected directory structure commands
+# mkdir -p {logs,parsed}
+# mkdir -p parsed/{genotype,phenotype,assembly}/parquet
+
+#####
+# Filter already processed files:
+# cd {BASE_DIR}
+# find {GFF_SOURCE} -name '*.gff.gz' > file.list
+# awk 'NR==FNR {seen[$0]; next} !($0 in seen)' old.list file.list > gffs.list
+# split -l 5000 --numeric-suffixes=00 --verbose gffs.list split.gff.
+# Creates a set of split files each with 5k. Use the number of files to create the array below
+
+#SBATCH --time=4:00:00   # walltime
+#SBATCH --ntasks=1   # number of tasks
+#SBATCH --cpus-per-task=1   # number of CPUs Per Task i.e if your code is multi-threaded
+#SBATCH --nodes=1   # number of nodes
+#SBATCH --array=00-{TOTAL_FILES}
+#SBATCH -p {QUEUE}   # partition(s)
+#SBATCH --mem={MEMORY}   # memory per node
+#SBATCH -J "{JOB_NAME}"   # job name
+#SBATCH --output={BASE_DIR}/logs/amr_array_job_%A_%a.out
+#SBATCH --error={BASE_DIR}/logs/amr_array_job_%A_%a.err
+#SBATCH --mail-user={EMAIL}
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+
+task_id=$(printf "%02d\n" $SLURM_ARRAY_TASK_ID)
+echo Task $task_id
+data_dir={BASE_DIR}
+output_dir=${data_dir}/parsed
+file=${data_dir}/split.gff.${task_id}
+echo "Processing file: ${file} which contains $(wc -l $file | awk '{print $1}' ) records"
+python3 parse_amr.py --files-list $file --output ${output_dir}/genotype/genotype.${task_id}.csv --output-assembly ${output_dir}/assembly/assembly.${task_id}.csv
