@@ -42,7 +42,7 @@ WHERE genotype.BioSample_ID = phenotype.BioSample_ID and genotype.assembly_ID = 
 """
     con.execute(query)
     for overrides in species_names_override:
-        print(f"Applying specific override for {overrides[1]}")
+        print(f" > Applying specific override for {overrides[1]}")
         con.execute("UPDATE genotype SET species =? WHERE species=?", overrides)
 
     print(" > Removing any 'subsp.' information from species")
