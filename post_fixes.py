@@ -9,19 +9,31 @@ def load_duckdb(con, args) -> None:
     print(f"Loading database tables into DuckDB")
     print(f" > Loading genotype from {args.genotype}")
     con.execute(
-        "create table genotype as select * from read_parquet(?)", [str(args.genotype)]
+        "CREATE TABLE genotype AS SELECT * FROM read_parquet(?)", [str(args.genotype)]
     )
     print(f" > Loading phenotype from {args.phenotype}")
     con.execute(
-        "create table phenotype as select * from read_parquet(?)", [str(args.phenotype)]
+        "CREATE TABLE phenotype AS SELECT * FROM read_parquet(?)", [str(args.phenotype)]
     )
     con.execute(
-        "create table fix_antibiotics as select * from read_csv(?)",
+        "CREATE TABLE fix_antibiotics as select * FROM read_csv(?)",
         [str(args.antibiotic_lookup)],
     )
     print(f" > Loading antibiotic fixes from {args.antibiotic_lookup}")
-    antib_fix = con.execute("Select count(*) from fix_antibiotics").fetchone()[0]
+    antib_fix = con.execute("SELECT count(*) FROM fix_antibiotics").fetchone()[0]
     print(f" > Found {antib_fix} entries to use for fixing antibiotic naming")
+    if args.filter_genomes:
+        print(f" > Loading genomes filter from {args.filter_genomes}")
+        con.execute(
+            "CREATE TABLE filter_genomes as SELECT * from read_csv(?)",
+            [str(args.filter_genomes)],
+        )
+        filter_genomes = con.execute("SELECT count(*) FROM filter_genomes").fetchone()[
+            0
+        ]
+        print(
+            f" > Found {filter_genomes} entries to use for fltering genomes in genotypes"
+        )
 
 
 species_names_override = [
@@ -84,7 +96,7 @@ WHERE genotype.subclass = a.subclass and genotype.antibiotic_name = ''
 """
     )
     drop_antibiotic_abbreviations(con, table)
-    set_string_column_to_null(con, table, 'antibiotic_name')
+    set_string_column_to_null(con, table, "antibiotic_name")
     con.commit()
 
 
@@ -115,19 +127,30 @@ AND column_name LIKE ?
         (table, "gen\\_%"),
     ).fetchall()
     for col in columns:
-        print(f" > Dropping column {table}.{col[0]}")
-        con.execute(f"ALTER TABLE {table} DROP COLUMN IF EXISTS {col[0]}")
+        drop_column(col, table, col[0])
 
 
-def drop_antibiotic_abbreviations(con, table) -> None:
+def drop_antibiotic_abbreviations(con, table: str) -> None:
     col = "antibiotic_abbreviation"
-    print(f" > Dropping {col} column from {table}")
-    con.execute(f"ALTER TABLE {table} DROP COLUMN IF EXISTS {col}")
+    drop_column(con, table, col)
 
 
-def set_string_column_to_null(con, table, column) -> None:
+def drop_column(con, table: str, column: str) -> None:
+    print(f" > Dropping {column} column from {table} if it exists")
+    con.execute(f"ALTER TABLE {table} DROP COLUMN IF EXISTS {column}")
+
+
+def set_string_column_to_null(con, table: str, column: str) -> None:
     print(f" > Setting {table}.{column} = '' to NULL")
     con.execute(f"UPDATE {table} SET {column} = NULL WHERE {column} = ''")
+
+
+def filter_genomes(con) -> None:
+    """Remove assemblies as specified in the assemblies list"""
+    print("Deleting genotype records where they have been suppressed")
+    con.execute(
+        "DELETE FROM genotype WHERE assembly_ID IN (select id from filter_genomes)"
+    )
 
 
 def create_assembly(con) -> None:
@@ -271,6 +294,12 @@ def arg_parser():
         required=True,
         help="CSV of additional antibiotic lookups. Not to be confused with the offline index of antibiotics (correct file is called fix-antibiotics.csv)",
     )
+    parser.add_argument(
+        "--filter-genomes",
+        type=Path,
+        required=False,
+        help="File of Assembly IDs to remove from a genotype file",
+    )
     return parser
 
 
@@ -281,6 +310,8 @@ def main():
         load_duckdb(con, args)
         update_phenotype(con)
         update_genotype(con)
+        if args.filter_genomes:
+            filter_genomes(con)
         if args.write_assembly:
             create_assembly(con)
         else:
