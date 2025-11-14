@@ -27,7 +27,6 @@ default_output_columns = [
     "subclass",
     "split_subclass",
     "antibiotic_name",
-    "antibiotic_abbreviation",
     "antibiotic_ontology",
     "antibiotic_ontology_link",
     "evidence_accession",
