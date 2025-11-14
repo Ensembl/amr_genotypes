@@ -127,7 +127,7 @@ def drop_antibiotic_abbreviations(con, table) -> None:
 
 def set_string_column_to_null(con, table, column) -> None:
     print(f" > Setting {table}.{column} = '' to NULL")
-    con.execute(f"UPDATE TABLE {table} SET {column} = NULL WHERE {column} = ''")
+    con.execute(f"UPDATE {table} SET {column} = NULL WHERE {column} = ''")
 
 
 def create_assembly(con) -> None:
