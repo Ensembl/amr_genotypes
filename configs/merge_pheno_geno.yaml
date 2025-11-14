@@ -1,6 +1,6 @@
-left: "https://ftp.ebi.ac.uk/pub/databases/ensembl/amr_portal/beta_5/phenotype.parquet"
-right: "https://ftp.ebi.ac.uk/pub/databases/ensembl/amr_portal/beta_5/genotype.parquet"
-output: "pheno_geno.parquet"
+left: "phenotype.parquet"
+right: "genotype.parquet"
+output: "phenotype_genotype_merged.parquet"
 join_type: "INNER"
 join_keys: ["BioSample_ID", "assembly_ID", "antibiotic_ontology"]
 conditions:
@@ -9,6 +9,7 @@ conditions:
 left_cols: 
   - "BioSample_ID"
   - "INSDC_secondary_accession"
+  - "antibiotic_ontology"
   - "assembly_ID"
   - "collection_year"
   - "ISO_country_code"
@@ -29,8 +30,6 @@ left_cols:
   - "measurement_units"
   - "platform"
   - "resistance_phenotype"
-  - "antibiotic_abbreviation"
-  - "antibiotic_ontology"
   - "antibiotic_ontology_link"
   - "country"
   - "geographical_region"

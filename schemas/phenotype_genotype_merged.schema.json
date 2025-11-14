@@ -103,13 +103,13 @@
       "description": "The name of the antibiotic tested (e.g. beta-lactams, trimethoprim-sulfamethoxazole)"
     },
     {
-      "name": "astStandard",
+      "name": "ast_standard",
       "type": "string",
       "nullable": true,
       "description": "The standard or guideline used for Antimicrobial Susceptibility Testing (e.g. CLSI, EUCAST)"
     },
     {
-      "name": "laboratoryTypingMethod",
+      "name": "laboratory_typing_method",
       "type": "string",
       "nullable": true,
       "description": "The method used to test the antibiotic sensitivity (e.g. disk diffusion, E-test)"
