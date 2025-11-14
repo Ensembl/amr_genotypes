@@ -127,12 +127,6 @@
       "description": "Normalised name of the antibiotic tested (e.g., beta-lactams, trimethoprim-sulfamethoxazole)"
     },
     {
-      "name": "antibiotic_abbreviation",
-      "type": "string",
-      "nullable" : true,
-      "description": "Abbreviation for the antibiotic (e.g. SXT)"
-    },
-    {
       "name": "antibiotic_ontology",
       "type": "string",
       "nullable" : true,

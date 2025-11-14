@@ -145,12 +145,6 @@
       "description": "The final result of the interpretation (e.g. susceptible, non-susceptible, resistant)"
     },
     {
-      "name": "antibiotic_abbreviation",
-      "type": "string",
-      "nullable": true,
-      "description": "A common abbreviation for the antibiotic (e.g. SXT)"
-    },
-    {
       "name": "antibiotic_ontology_link",
       "type": "string",
       "nullable": true,

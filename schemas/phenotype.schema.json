@@ -67,10 +67,16 @@
       "description": "The general category of the isolation source (e.g. respiratory tract)"
     },
     {
-      "name": "lat_lon",
+      "name": "isolation_latitude",
       "type": "string",
       "nullable": true,
-      "description": "Geographic coordinates (latitude and longitude)"
+      "description": "Geographic latitude for the sample"
+    },
+    {
+      "name": "isolation_longitude",
+      "type": "string",
+      "nullable": true,
+      "description": "Geographic longitude for the sample"
     },
     {
       "name": "genus",
@@ -121,22 +127,22 @@
       "description": "The name of the antibiotic tested (e.g. beta-lactams, trimethoprim-sulfamethoxazole)"
     },
     {
-      "name": "astStandard",
+      "name": "ast_standard",
       "type": "string",
       "nullable": true,
       "description": "The standard or guideline used for Antimicrobial Susceptibility Testing (e.g. CLSI, EUCAST)"
     },
     {
-      "name": "laboratoryTypingMethod",
+      "name": "laboratory_typing_method",
       "type": "string",
       "nullable": true,
       "description": "The method used to test the antibiotic sensitivity (e.g. disk diffusion, E-test)"
     },
     {
       "name": "measurement",
-      "type": "float64",
+      "type": "string",
       "nullable": true,
-      "description": "The raw measurement value, typically MIC or zone size (e.g. 2, 1, 0.5). FLOAT is used for non-integer numeric values"
+      "description": "The raw measurement value, typically MIC or zone size (e.g. 2, 1, 0.5, 12/0.125)."
     },
     {
       "name": "measurement_sign",
@@ -167,12 +173,6 @@
       "type": "string",
       "nullable": false,
       "description": "The species of the organism (e.g. Streptococcus pneumoniae)"
-    },
-    {
-      "name": "antibiotic_abbreviation",
-      "type": "string",
-      "nullable": true,
-      "description": "A common abbreviation for the antibiotic (e.g. SXT)"
     },
     {
       "name": "antibiotic_ontology",
