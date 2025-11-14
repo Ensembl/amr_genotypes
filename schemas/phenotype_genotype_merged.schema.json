@@ -73,10 +73,16 @@
       "description": "The general category of the isolation source (e.g. respiratory tract)"
     },
     {
-      "name": "lat_lon",
+      "name": "isolation_latitude",
       "type": "string",
       "nullable": true,
-      "description": "Geographic coordinates (latitude and longitude)"
+      "description": "Geographic latitude for the sample"
+    },
+    {
+      "name": "isolation_longitude",
+      "type": "string",
+      "nullable": true,
+      "description": "Geographic longitude for the sample"
     },
     {
       "name": "AMR_associated_publications",
