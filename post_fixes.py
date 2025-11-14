@@ -84,6 +84,7 @@ WHERE genotype.subclass = a.subclass and genotype.antibiotic_name = ''
 """
     )
     drop_antibiotic_abbreviations(con, table)
+    set_string_column_to_null(con, table, 'antibiotic_name')
     con.commit()
 
 
@@ -122,6 +123,11 @@ def drop_antibiotic_abbreviations(con, table) -> None:
     col = "antibiotic_abbreviation"
     print(f" > Dropping {col} column from {table}")
     con.execute(f"ALTER TABLE {table} DROP COLUMN IF EXISTS {col}")
+
+
+def set_string_column_to_null(con, table, column) -> None:
+    print(f" > Setting {table}.{column} = '' to NULL")
+    con.execute(f"UPDATE TABLE {table} SET {column} = NULL WHERE {column} = ''")
 
 
 def create_assembly(con) -> None:
