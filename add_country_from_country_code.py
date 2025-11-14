@@ -17,7 +17,8 @@ def load_duckdb(con, args) -> None:
     if ".csv" in args.input:
         print(f"Loading parquet {args.input}")
         con.execute(
-            f"create table {table_name} as select * from read_csv(?)", [str(args.input)]
+            f"create table {table_name} as select * from read_csv(?, sample_size = -1)",
+            [str(args.input)],
         )
     elif ".parquet" in args.input:
         print(f"Loading parquet {args.input}")
@@ -100,7 +101,9 @@ def write_to_disk(con, args):
     elif ".parquet" in str(args.output):
         options = "FORMAT parquet, COMPRESSION zstd"
     else:
-        raise ValueError(f"Do not understand the format extension in the file {path}. Try .csv, .csv.gz or .parquet")
+        raise ValueError(
+            f"Do not understand the format extension in the file {path}. Try .csv, .csv.gz or .parquet"
+        )
     query = f"""
 COPY
     (SELECT * FROM {table_name})
