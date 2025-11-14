@@ -92,9 +92,9 @@
     },
     {
       "name": "AMR_associated_publications",
-      "type": "int32",
+      "type": "string",
       "nullable": true,
-      "description": "The PubMed ID of the publication associated with the data"
+      "description": "The PubMed ID of the publication associated with the data. Can be a set of values joined with a ;"
     },
     {
       "name": "Updated_phenotype_CLSI",
