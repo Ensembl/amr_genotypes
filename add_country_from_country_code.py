@@ -15,7 +15,7 @@ def load_duckdb(con, args) -> None:
     con.execute("LOAD httpfs")
 
     if ".csv" in args.input:
-        print(f"Loading parquet {args.input}")
+        print(f"Loading CSV file {args.input}")
         con.execute(
             f"create table {table_name} as select * from read_csv(?, sample_size = -1)",
             [str(args.input)],
