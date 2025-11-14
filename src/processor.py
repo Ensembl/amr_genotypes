@@ -241,10 +241,6 @@ class Processor:
                                     else:
                                         antibiotic_name = compound_obj.get("label")
                                         new_record["antibiotic_name"] = antibiotic_name
-                                        # Abbreviations are only found locally
-                                        new_record["antibiotic_abbreviation"] = (
-                                            compound_obj.get("abbreviation", "")
-                                        )
                                         new_record["antibiotic_ontology"] = (
                                             compound_obj.get("short_form")
                                         )

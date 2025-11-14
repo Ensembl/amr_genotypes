@@ -49,7 +49,7 @@ class LocalAntibioticLookup:
             'label', 'iri', 'short_form', and 'ontology_link'.
         """
 
-        common_columns = "ontology, antibiotic_ontology as id, antibiotic_name as label, antibiotic_abbreviation, antibiotic_ontology_link as ontology_link, iri"
+        common_columns = "ontology, antibiotic_ontology as id, antibiotic_name as label, antibiotic_ontology_link as ontology_link, iri"
 
         # Try a direct match first
         result = self.db.execute(
@@ -82,9 +82,8 @@ class LocalAntibioticLookup:
                 "id": result[1].replace("_", ":") if result[1] else None,
                 "short_form": result[1],
                 "label": result[2],
-                "abbreviation": result[3],
-                "ontology_link": result[4],
-                "iri": result[5],
+                "ontology_link": result[3],
+                "iri": result[4],
             }
         log.warning(f"No ontology match for antibiotic {antibiotic}")
         return None
