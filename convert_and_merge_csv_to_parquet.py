@@ -28,7 +28,7 @@ def convert_csv_to_parquet(
     )
     convert_opts = pv.ConvertOptions(
         column_types=schema,
-        null_values=[f.name for f in schema if f.nullable],
+        null_values=["", "null", "None", "N/A"],
         true_values=["True", "true", "yes"],
         false_values=["False", "false", "no"],
         strings_can_be_null=True,
