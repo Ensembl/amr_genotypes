@@ -13,10 +13,22 @@ country_codes_remote_csv = "https://raw.githubusercontent.com/datasets/country-c
 def load_duckdb(con, args) -> None:
     con.execute("INSTALL httpfs")
     con.execute("LOAD httpfs")
-    print(f"Loading parquet {args.input}")
-    con.execute(
-        f"create table {table_name} as select * from read_parquet(?)", [str(args.input)]
-    )
+
+    if ".csv" in args.input:
+        print(f"Loading parquet {args.input}")
+        con.execute(
+            f"create table {table_name} as select * from read_csv(?)", [str(args.input)]
+        )
+    elif ".parquet" in args.input:
+        print(f"Loading parquet {args.input}")
+        con.execute(
+            f"create table {table_name} as select * from read_parquet(?)",
+            [str(args.input)],
+        )
+    else:
+        raise ValueError(
+            "Provided file does not end in .parquet or .csv or .csv.gz. Not sure how to load"
+        )
     print(f"Loading country codes table")
     con.execute(
         "create table country_codes as select * from read_csv(?)",
@@ -100,7 +112,7 @@ def arg_parser():
         "--input",
         type=str,
         required=True,
-        help="Path or URL to the input Parquet file.",
+        help="Path or URL to the input Parquet or CSV file.",
     )
     parser.add_argument(
         "--output",
