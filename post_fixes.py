@@ -6,10 +6,12 @@ import duckdb
 
 
 def load_duckdb(con, args) -> None:
-    print(f"Loading parquet with {args.genotype} and {args.phenotype}")
+    print(f"Loading database tables into DuckDB")
+    print(f" > Loading genotype from {args.genotype}")
     con.execute(
         "create table genotype as select * from read_parquet(?)", [str(args.genotype)]
     )
+    print(f" > Loading phenotype from {args.phenotype}")
     con.execute(
         "create table phenotype as select * from read_parquet(?)", [str(args.phenotype)]
     )
@@ -17,8 +19,9 @@ def load_duckdb(con, args) -> None:
         "create table fix_antibiotics as select * from read_csv(?)",
         [str(args.antibiotic_lookup)],
     )
+    print(f" > Loading antibiotic fixes from {args.antibiotic_lookup}")
     antib_fix = con.execute("Select count(*) from fix_antibiotics").fetchone()[0]
-    print(f"Found {antib_fix} entries to use for fixing antibiotic naming")
+    print(f" > Found {antib_fix} entries to use for fixing antibiotic naming")
 
 
 species_names_override = [
@@ -28,7 +31,8 @@ species_names_override = [
 
 
 def update_genotype(con) -> None:
-    print("Updating genotype species names from phenotype")
+    print("Updating the genotype table")
+    print(" > Updating genotype species names from phenotype")
     table = "genotype"
     query = """
 UPDATE genotype 
@@ -41,17 +45,17 @@ WHERE genotype.BioSample_ID = phenotype.BioSample_ID and genotype.assembly_ID = 
         print(f"Applying specific override for {overrides[1]}")
         con.execute("UPDATE genotype SET species =? WHERE species=?", overrides)
 
-    print("Removing any 'subsp.' information from species")
+    print(" > Removing any 'subsp.' information from species")
     con.execute(
         "UPDATE genotype SET species = regexp_replace(species, ?, '') WHERE species LIKE ?",
         ["\\ssubsp\\..+$", "%subsp.%"],
     )
-    print("Removing any 'complex' information from species")
+    print(" > Removing any 'complex' information from species")
     con.execute(
         "UPDATE genotype SET species = regexp_replace(species, ?, '') WHERE species LIKE ?",
         ["\\scomplex.+$", "%complex%"],
     )
-    print("Removing any 'variant' information from species")
+    print(" > Removing any 'variant' information from species")
     con.execute(
         "UPDATE genotype SET species = regexp_replace(species, ?, '') WHERE species LIKE ?",
         ["\\svariant.+$", "%variant%"],
@@ -70,7 +74,7 @@ WHERE taxon_id IS NULL
 
     drop_generated_columns(con, table)
 
-    print("Fixing missing antibiotics")
+    print(" > Fixing missing antibiotics")
     con.execute(
         """
 UPDATE genotype
@@ -85,9 +89,11 @@ WHERE genotype.subclass = a.subclass and genotype.antibiotic_name = ''
 
 def update_phenotype(con) -> None:
     table = "phenotype"
-    print(f"Updating known BioSample_ID data error in {table} table")
+    print(f"Updating the table {table}")
+    print(f" > Updating known BioSample_ID data error in {table} table")
     affected_ids = [["SAMEA1028830", "8830"]]
     for ids in affected_ids:
+        print(f"  > Changing {ids[1]} to {ids[0]}")
         query = f"UPDATE {table} SET BioSample_ID = ? WHERE BioSample_ID = ?"
         con.execute(query, ids)
     drop_generated_columns(con, table)
@@ -96,7 +102,7 @@ def update_phenotype(con) -> None:
 
 
 def drop_generated_columns(con, table) -> None:
-    print(f"Dropping generated columns from {table}")
+    print(f" > Dropping generated columns from {table}")
     print(f" > Finding columns in {table} with a 'gen_' prefix")
     columns = con.execute(
         """
@@ -114,9 +120,8 @@ AND column_name LIKE ?
 
 def drop_antibiotic_abbreviations(con, table) -> None:
     col = "antibiotic_abbreviation"
-    print(f"Dropping {col} column from {table}")
+    print(f" > Dropping {col} column from {table}")
     con.execute(f"ALTER TABLE {table} DROP COLUMN IF EXISTS {col}")
-    print(f" > Done")
 
 
 def create_assembly(con) -> None:
@@ -209,9 +214,10 @@ def write_to_disk(con, args):
     tables = ["phenotype", "genotype"]
     if args.write_assembly:
         tables.append("assembly")
+    print("Writing fixed tables to disk")
     for t in tables:
         path = output_dir / f"{t}.parquet"
-        print(f"Writing the table {t} out to {path}")
+        print(f" > Writing the table {t} out to {path}")
         query = f"""
 COPY
     (SELECT * FROM {t})
