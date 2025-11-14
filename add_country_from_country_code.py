@@ -95,11 +95,17 @@ WHERE {table_name}.{iso_code_column} = un."ISO-alpha3 Code"
 def write_to_disk(con, args):
     path = args.output
     print(f"Writing the table {table_name} out to {path}")
+    if ".csv" in str(args.output):
+        options = "FORMAT CSV"
+    elif ".parquet" in str(args.output):
+        options = "FORMAT parquet, COMPRESSION zstd"
+    else:
+        raise ValueError(f"Do not understand the format extension in the file {path}. Try .csv, .csv.gz or .parquet")
     query = f"""
 COPY
     (SELECT * FROM {table_name})
     TO '{path}'
-    (FORMAT parquet, COMPRESSION zstd)
+    ({options})
 """
     con.execute(query)
 
