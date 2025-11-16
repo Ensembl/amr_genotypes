@@ -58,6 +58,12 @@ def load_duckdb(con, args) -> None:
 def update(con, args) -> None:
     iso_code_column = args.iso_code_column
     print("Updating country names from country codes")
+    if args.overwrite:
+        print(" > Removing country columns if they exist")
+        for column in ("country", "geographical_region", "geographical_subregion"):
+            print(f" > Removing {table_name}.{column} if it exists")
+            con.execute(f"ALTER TABLE {table_name} DROP COLUMN IF EXISTS {column}")
+
     con.execute(f"ALTER TABLE {table_name} ADD COLUMN country VARCHAR")  # amr_name
     con.execute(
         f"ALTER TABLE {table_name} ADD COLUMN geographical_region VARCHAR"
@@ -160,6 +166,11 @@ def arg_parser():
         nargs="+",
         required=False,
         help="Columns to drop from the output file",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action=argparse.BooleanOptionalAction,
+        help="Drop country and region columns before population",
     )
     return parser
 
