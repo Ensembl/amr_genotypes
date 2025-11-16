@@ -46,4 +46,4 @@ data_dir={BASE_DIR}
 output_dir=${data_dir}/parsed
 file=${data_dir}/split.gff.${task_id}
 echo "Processing file: ${file} which contains $(wc -l $file | awk '{print $1}' ) records"
-python3 parse_amr.py --files-list $file --output ${output_dir}/genotype/genotype.${task_id}.csv --output-assembly ${output_dir}/assembly/assembly.${task_id}.csv
+python3 {PARSE_AMR_PY} --files-list $file --output ${output_dir}/genotype/genotype.${task_id}.csv --output-assembly ${output_dir}/assembly/assembly.${task_id}.csv
