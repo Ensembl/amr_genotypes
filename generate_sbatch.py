@@ -59,8 +59,10 @@ def split_list_and_write(base_dir: Path, files: list[str]) -> int:
     return split_count
 
 def write_template(args, split_count:int):
-    with open(Path(__file__).parent / "sbatch.template") as fh:
+    current_dir = Path(__file__).parent.absolute()
+    with open( current_dir / "templates" / "sbatch.template") as fh:
         template = fh.read()
+    template = template.replace("{PARSE_AMR_PY}", str(current_dir / 'parse_amr.py'))
     template = template.replace("{BASE_DIR}", str(args.base_dir.absolute()))
     template = template.replace("{EMAIL}", args.email)
     template = template.replace("{JOB_NAME}", args.job_name)
