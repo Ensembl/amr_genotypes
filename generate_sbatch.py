@@ -66,7 +66,7 @@ def write_template(args, split_count:int):
     template = template.replace("{JOB_NAME}", args.job_name)
     template = template.replace("{QUEUE}", args.queue)
     template = template.replace("{MEMORY}", args.memory)
-    template = template.replace("{TOTAL_FILES}", f"{split_count:0>2}")
+    template = template.replace("{TOTAL_FILES}", f"{split_count-1:0>2}")
     print(f"Writing new template to {args.output}")
     with open(args.output, 'wt') as fh:
         fh.write(template)
