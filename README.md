@@ -1,6 +1,6 @@
 # AMR Genotypes parser
 
-A tool for parsing GFFs and TSV files produced by [mettannotator](https://github.com/EBI-Metagenomics/mettannotator) from MGnify. Parses the mettannotator combined GFF file looking for CDS records and lookups up the complementary AMRFinderPlus TSV file for more indepth results not transferred to the combined GFF file.
+A tool for parsing GFFs and TSV files produced by [mettannotator](https://github.com/EBI-Metagenomics/mettannotator) from MGnify. Parses the mettannotator combined GFF file looking for CDS records and lookups up the complementary AMRFinderPlus TSV file for more in-depth results not transferred to the combined GFF file.
 
 ## Usage
 
@@ -33,7 +33,7 @@ The program will create four output files
 - `assembly.csv` a CSV of all assemblies found and processed from parsing the specified GFF files
 - `assembly.parquet` parquet representation of the same assembly data
 
-## External dependnecies
+## External dependencies
 
 This tool requires an internet connection to contact the following APIs
 
