@@ -3,6 +3,7 @@
 import argparse
 from math import ceil
 from pathlib import Path
+from itertools import islice
 
 def _batched(iterable, n, *, strict=False):
     # batched('ABCDEFG', 2) → AB CD EF G
