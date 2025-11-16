@@ -3,8 +3,21 @@
 import argparse
 from math import ceil
 from pathlib import Path
-from itertools import batched
 
+def _batched(iterable, n, *, strict=False):
+    # batched('ABCDEFG', 2) → AB CD EF G
+    if n < 1:
+        raise ValueError('n must be at least one')
+    iterator = iter(iterable)
+    while batch := tuple(islice(iterator, n)):
+        if strict and len(batch) != n:
+            raise ValueError('batched(): incomplete batch')
+        yield batch
+
+try:
+    from itertools import batched
+except ImportError:
+    batched = _batched
 
 def generate_directory_structure(base_dir: Path):
     print("Setting up directories")
