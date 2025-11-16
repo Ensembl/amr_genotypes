@@ -5,20 +5,15 @@ from math import ceil
 from pathlib import Path
 from itertools import islice
 
-def _batched(iterable, n, *, strict=False):
-    # batched('ABCDEFG', 2) → AB CD EF G
+def batched(iterable, n):
     if n < 1:
-        raise ValueError('n must be at least one')
-    iterator = iter(iterable)
-    while batch := tuple(islice(iterator, n)):
-        if strict and len(batch) != n:
-            raise ValueError('batched(): incomplete batch')
+        raise ValueError("n must be at least 1")
+    it = iter(iterable)
+    while True:
+        batch = list(islice(it, n))
+        if not batch:
+            return
         yield batch
-
-try:
-    from itertools import batched
-except ImportError:
-    batched = _batched
 
 def generate_directory_structure(base_dir: Path):
     print("Setting up directories")
