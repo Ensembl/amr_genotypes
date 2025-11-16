@@ -20,6 +20,10 @@ python3 parse_amr.py --files path/to/gff.gff
 
 Running with `--help` will print all commands available.
 
+### More information
+
+For more information about this step and subsequent consult </PROCESSING.md>
+
 ## Outputs
 
 The program will create four output files
