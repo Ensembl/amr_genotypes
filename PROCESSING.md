@@ -1,5 +1,18 @@
 # Steps to process data
 
+## Some files/items to setup
+
+### Files
+
+- Deposit the phenotype parquet file in `parsed/phenotype/phenotyoe.parquet`
+
+### Software and variables
+
+- Set `path_to_files` to where the GFFs and TSVs are
+- Set `workdir` to a directory you will write results to
+- Set `email` to your email
+- Always deposit a `previously.processed.files` in $workdir to ensure later steps work
+
 ## Generate catalog of files to process
 
 Create a file detailing all files we know about which could be processed.
@@ -61,7 +74,7 @@ python3 ${AMR_SOFTWARE}/convert_and_merge_csv_to_parquet.py \
 
 ### Adding country and regions
 
-Only run this command if the phenotype file doesn't already have the country and regions from the ISO code populated.
+Run this if you want to add the country, region and subregion data. Run without `--overwrite` if you don't want to remove the columns first.
 
 ```bash
 phenotype_parquet_no_countries=${workdir}/parsed/phenotype/phenotype.parquet
@@ -71,7 +84,8 @@ $AMR_SOFTWARE/add_country_from_country_code.py \
   --output $fixed_phenotype_parquet \
   --country-codes $AMR_SOFTWARE/configs/country-codes.csv \
   --unsd $AMR_SOFTWARE/configs/unsd-country.csv \
-  --iso-code-column ISO_country_code
+  --iso-code-column ISO_country_code \
+  --overwrite
 ```
 
 ### Combining previous runs: via parquet
