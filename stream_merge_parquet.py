@@ -55,13 +55,21 @@ def main():
     parser = argparse.ArgumentParser(
         description="Stream-merge a list of Parquet files into one, preserving compression."
     )
-    parser.add_argument("--files", nargs="+", help="List of Parquet files to merge", required=False)
     parser.add_argument(
-        "--input_dir", help="Directory to scan. Not used if you have specified --files", required=False
+        "--files", nargs="+", help="List of Parquet files to merge", required=False
     )
-    parser.add_argument("--output_file", help="Output Parquet file path")
+    parser.add_argument(
+        "--input_dir",
+        "--input-dir",
+        help="Directory to scan. Not used if you have specified --files",
+        required=False,
+    )
+    parser.add_argument(
+        "--output_file", "--output-file", help="Output Parquet file path"
+    )
     parser.add_argument(
         "--chunk_size",
+        "--chunk-size",
         type=int,
         default=500_000,
         help="Rows per row group (default 500k)",

@@ -65,18 +65,21 @@ def main():
     )
     parser.add_argument(
         "--input_dir",
+        "--input-dir",
         type=Path,
         required=True,
         help="Directory containing the CSV files.",
     )
     parser.add_argument(
         "--output_dir",
+        "--output-dir",
         type=Path,
         required=True,
         help="Directory to store the generated Parquet files.",
     )
     parser.add_argument(
         "--merged_file",
+        "--merged-file",
         type=Path,
         required=True,
         help="Path (including filename) for the merged Parquet file.",

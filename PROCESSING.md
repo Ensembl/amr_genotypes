@@ -2,16 +2,16 @@
 
 ## Some files/items to setup
 
-### Files
-
-- Deposit the phenotype parquet file in `parsed/phenotype/phenotyoe.parquet`
-
 ### Software and variables
 
 - Set `path_to_files` to where the GFFs and TSVs are
 - Set `workdir` to a directory you will write results to
 - Set `email` to your email
-- Always deposit a `previously.processed.files` in $workdir to ensure later steps work
+
+### Files to bring in
+
+- Deposit a `previously.processed.files` in `$workdir` to ensure later steps work (even an empty file)
+- Deposit the phenotype parquet file in `parsed/phenotype/phenotyoe.parquet`
 
 ## Generate catalog of files to process
 
@@ -41,7 +41,7 @@ python3 generate_sbatch.py \
   --previously-processed $previously_processed
 ```
 
-The script generates an sbatch, a set of split files (filtered for those files we've already processed) and creates a job array for each split file. It will also create the following directories.
+The script generates an sbatch, a set of split files named `split.gff.NN` containing 5,000 records to process or less. They are filtered for those files we've already processed. Sbatch will create a job array with each element working on each split file. The script will also create the following directories (so put the `phenotype.parquet` file in here).
 
 - `logs`
 - `parsed`
@@ -65,16 +65,16 @@ AMR_SOFTWARE=$PWD
 python3 ${AMR_SOFTWARE}/convert_and_merge_csv_to_parquet.py \
   --input_dir ${workdir}/parsed/genotype \
   --pattern 'genotype.*.csv' \
-  --output_dir ${workdir}/parsed/genotype/parquet \
-  --merged_file ${workdir}/parsed/genotype/genotype.merged.parquet \
-  --schema_file ${AMR_SOFTWARE}/schemas/genotype.schema.json
+  --output-dir ${workdir}/parsed/genotype/parquet \
+  --merged-file ${workdir}/parsed/genotype/genotype.merged.parquet \
+  --schema-file ${AMR_SOFTWARE}/schemas/genotype.schema.json
 ```
 
 ## Edits to the phenotype file
 
 ### Adding country and regions
 
-Run this if you want to add the country, region and subregion data. Run without `--overwrite` if you don't want to remove the columns first.
+Run this if you want to add the country, region and subregion data. Run without `--overwrite` if you don't want to drop the columns before running (note this will kill the program if the columns exist already).
 
 ```bash
 phenotype_parquet_no_countries=${workdir}/parsed/phenotype/phenotype.parquet
@@ -97,7 +97,7 @@ previous_parquet='genotype.previous.parquet'
 merged_file=${workdir}/parsed/genotype.merged.prior.parquet
 $AMR_SOFTWARE/stream_merge_parquet.py \
   --files ${workdir}/parsed/genotype/genotype.merged.parquet $previous_parquet \
-  --output_file ${workdir}/parsed/genotype.merged.prior.parquet
+  --output-file ${workdir}/parsed/genotype.merged.prior.parquet
 ```
 
 Note merging will not work if they are different in their schema composition.

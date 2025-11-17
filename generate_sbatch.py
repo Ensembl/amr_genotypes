@@ -5,6 +5,7 @@ from math import ceil
 from pathlib import Path
 from itertools import islice
 
+
 def batched(iterable, n):
     if n < 1:
         raise ValueError("n must be at least 1")
@@ -14,6 +15,7 @@ def batched(iterable, n):
         if not batch:
             return
         yield batch
+
 
 def generate_directory_structure(base_dir: Path):
     print("Setting up directories")
@@ -46,9 +48,11 @@ def files_to_process(to_process: Path, previously_processed: Path = None) -> lis
 
 
 def split_list_and_write(base_dir: Path, files: list[str]) -> int:
-    split_count=0
+    split_count = 0
     batch_size = 5000
-    print(f"Splitting {len(files)} GFF(s) into {ceil(len(files)/batch_size)} batches of {batch_size}")
+    print(
+        f"Splitting {len(files)} GFF(s) into {ceil(len(files)/batch_size)} batches of {batch_size}"
+    )
     for batch in batched(files, batch_size):
         path = f"split.gff.{split_count:0>2}"
         with open(base_dir / path, "wt") as fh:
@@ -58,11 +62,12 @@ def split_list_and_write(base_dir: Path, files: list[str]) -> int:
         split_count += 1
     return split_count
 
-def write_template(args, split_count:int):
+
+def write_template(args, split_count: int):
     current_dir = Path(__file__).parent.absolute()
-    with open( current_dir / "templates" / "sbatch.template") as fh:
+    with open(current_dir / "templates" / "sbatch.template") as fh:
         template = fh.read()
-    template = template.replace("{PARSE_AMR_PY}", str(current_dir / 'parse_amr.py'))
+    template = template.replace("{PARSE_AMR_PY}", str(current_dir / "parse_amr.py"))
     template = template.replace("{BASE_DIR}", str(args.base_dir.absolute()))
     template = template.replace("{EMAIL}", args.email)
     template = template.replace("{JOB_NAME}", args.job_name)
@@ -70,7 +75,7 @@ def write_template(args, split_count:int):
     template = template.replace("{MEMORY}", args.memory)
     template = template.replace("{TOTAL_FILES}", f"{split_count-1:0>2}")
     print(f"Writing new template to {args.output}")
-    with open(args.output, 'wt') as fh:
+    with open(args.output, "wt") as fh:
         fh.write(template)
 
 
@@ -137,7 +142,7 @@ def main():
     args = parser.parse_args()
     generate_directory_structure(args.base_dir)
     files = files_to_process(args.to_process, args.previously_processed)
-    split_count =split_list_and_write(args.base_dir, files)
+    split_count = split_list_and_write(args.base_dir, files)
     write_template(args, split_count)
     print(f"✅ Script finished")
 
