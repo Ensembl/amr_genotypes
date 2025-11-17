@@ -92,6 +92,7 @@ def main():
     )
     parser.add_argument(
         "--schema_file",
+        "--schema-file",
         type=Path,
         required=True,
         help="Path to YAML or JSON schema file.",
