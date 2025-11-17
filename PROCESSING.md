@@ -78,7 +78,7 @@ Run this if you want to add the country, region and subregion data. Run without 
 
 ```bash
 phenotype_parquet_no_countries=${workdir}/parsed/phenotype/phenotype.parquet
-fixed_phenotype_parquet=${workdir}/parsed/phenotype/phenotype.countries.parquet
+fixed_phenotype_parquet=${workdir}/parsed/phenotype.countries.parquet
 $AMR_SOFTWARE/add_country_from_country_code.py \
   --input $phenotype_parquet_no_countries \
   --output $fixed_phenotype_parquet \
@@ -97,7 +97,7 @@ previous_parquet='genotype.previous.parquet'
 merged_file=${workdir}/parsed/genotype.merged.prior.parquet
 $AMR_SOFTWARE/stream_merge_parquet.py \
   --files ${workdir}/parsed/genotype/genotype.merged.parquet $previous_parquet \
-  --output-file ${workdir}/parsed/genotype.merged.prior.parquet
+  --output-file ${merged_file}
 ```
 
 Note merging will not work if they are different in their schema composition.
@@ -122,10 +122,9 @@ In genotype this will:
 - Delete any suppressed genomes
 
 ```bash
-phenotype_file=phenotype.parquet
 $AMR_SOFTWARE/post_fixes.py \
   --genotype $merged_file \
-  --phenotype $phenotype_file \
+  --phenotype $fixed_phenotype_parquet \
   --output-dir $workdir \
   --antibiotic-lookup $AMR_SOFTWARE/configs/fix-antibiotics.csv \
   --filter-genomes $AMR_SOFTWARE/configs/filter-files/assembly_qc_filter.csv

@@ -19,10 +19,10 @@
       "description": "An ontology ID for the antibiotic (e.g. ARO_3004024)"
     },
     {
-      "name": "INSDC_secondary_accession",
+      "name": "SRA_accession",
       "type": "string",
       "nullable": true,
-      "description": "The secondary accession number in the International Nucleotide Sequence Database Collaboration (INSDC)"
+      "description": "The SRA accession number"
     },
     {
       "name": "collection_year",

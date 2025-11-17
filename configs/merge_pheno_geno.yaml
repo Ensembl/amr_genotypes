@@ -8,7 +8,7 @@ conditions:
     condition: "IN ('resistant', 'susceptible', 'susceptible-dose dependent', 'intermediate')"
 left_cols: 
   - "BioSample_ID"
-  - "INSDC_secondary_accession"
+  - "SRA_accession"
   - "antibiotic_ontology"
   - "assembly_ID"
   - "collection_year"
