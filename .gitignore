@@ -16,3 +16,4 @@ venv/
 /.vscode
 /*.csv
 /*.parquet
+.DS_Store

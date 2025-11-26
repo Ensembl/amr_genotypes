@@ -10,7 +10,7 @@
       "name": "SRA_accession",
       "type": "string",
       "nullable": true,
-      "description": "The SRA accession number in the International Nucleotide Sequence Database Collaboration (INSDC)"
+      "description": "The SRA accession number"
     },
     {
       "name": "assembly_ID",
