@@ -33,6 +33,31 @@ The program will create four output files
 - `assembly.csv` a CSV of all assemblies found and processed from parsing the specified GFF files
 - `assembly.parquet` parquet representation of the same assembly data
 
+## Data schemas
+
+The library creates JSON formatted schemas which when processed by `src.schema.load_schema_from_config()` will convert into a pyarrow schema. The schema record has the following fields
+
+- `name` : name of the column
+- `type` : data type of the column. We support `string`, `int8`, `int16`, `int32`, `int64`, `float16`, `float32`, `float64`, `bool`, `timestamp[ns]` (supports `s`, `ms`, `us` and `ns`), `duration` (same units as before), `time32[s]` (`s` and `ms`), `time64` (`us` and `ns`), `uuid` and `binary`
+- `nullable` : if the column can be nulled
+- `description` : description of the field. Will be used to create the markdown table
+
+## Additional tools
+
+The `scripts` directory has a series of additional tools which can be used to further process
+
+- `add_country_from_country_code.py` - For a given parquet file we will add country information from an ISO 3 letter code
+- `apply_new_schema_to_parquet.py` - Apply a schema to an existing parquet file
+- `convert_and_merge_csv_to_parquet.py` - Take a set of CSV files, convert to parquet and merge
+- `generate_sbatch.py` - Generate a sbatch script which will split a list of files into job arrays of specified length for Slurm
+- `generate_schema_from_parquet.py` - Take a parquet file and generate a schema JSON file
+- `join_parquet.py` - Perform a SQL-like join between parquet data sets
+- `lookup_quickly.py` - Lookup antibiotics quickly using the lookup library
+- `parquet_to_csv_gz.py` - Convert parquet files to CSV. If you use a `.gz` extension it will compress
+- `post_fixes.py` - Run a series of fixes on CABBAGE data. Should always be run until fixes are incorporated upstream
+- `schema_to_markdown_table.py` - Take a schema JSON file and create a markdown formatted table
+- `stream_merge_parquet.py` - Take multiple parquet files and merge them together
+
 ## External dependencies
 
 This tool requires an internet connection to contact the following APIs

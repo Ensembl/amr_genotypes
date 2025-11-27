@@ -6,12 +6,30 @@ from .utils import slurp_json
 
 TYPE_MAP = {
     "string": pa.string(),
+    "int8": pa.int8(),
+    "int16": pa.int16(),
     "int32": pa.int32(),
     "int64": pa.int64(),
+    "float16": pa.float16(),
     "float32": pa.float32(),
     "float64": pa.float64(),
     "bool": pa.bool_(),
+    "time32[s]": pa.time32("s"),
+    "time32[ms]": pa.time32("ms"),
+    "time64[us]": pa.time64("us"),
+    "time64[ns]": pa.time64("ns"),
+    "timestamp[s]": pa.timestamp("s"),
+    "timestamp[ms]": pa.timestamp("ms"),
+    "timestamp[us]": pa.timestamp("us"),
     "timestamp[ns]": pa.timestamp("ns"),
+    "duration[s]": pa.duration("s"),
+    "duration[ms]": pa.duration("ms"),
+    "duration[us]": pa.duration("us"),
+    "duration[ns]": pa.duration("ns"),
+    "date32": pa.date32(),
+    "date64": pa.date64(),
+    "uuid": pa.uuid(),
+    "binary": pa.binary(),
 }
 
 
