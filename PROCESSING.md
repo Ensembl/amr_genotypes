@@ -26,7 +26,7 @@ Create a file detailing all files we know about which could be processed.
 
 ```bash
 path_to_files=/hps/path/to/gffs
-target_files="target.files"
+target_files="${workdir}/target.files"
 find $path_to_files -name '*.gff.gz' > $target_files
 ```
 
