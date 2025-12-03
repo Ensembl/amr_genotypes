@@ -12,7 +12,7 @@ Also set a few higher level global variables
 
 ```bash
 AMR_SOFTWARE=$PWD
-AMR_SCRIPTS=$PWD/scripts
+AMR_SCRIPTS=${AMR_SOFTWARE}/scripts
 ```
 
 ### Files to bring in
