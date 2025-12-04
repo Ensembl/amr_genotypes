@@ -2,6 +2,13 @@
 
 ## Some files/items to setup
 
+### Install software
+
+```bash
+python -mvenv .venv
+pip install -r requirements.txt
+```
+
 ### Software and variables
 
 - Set `path_to_files` to where the GFFs and TSVs are
@@ -12,6 +19,7 @@ Also set a few higher level global variables
 
 ```bash
 AMR_SOFTWARE=$PWD
+source $AMR_SOFTWARE/.venv/bin/activate
 AMR_SCRIPTS=${AMR_SOFTWARE}/scripts
 ```
 
@@ -100,7 +108,7 @@ ${AMR_SCRIPTS}/add_country_from_country_code.py \
 If you have previous runs you can either create the new parquet file by copying over previous results or merging the two resulting parquet files. The following does this for parquet formatted files.
 
 ```bash
-previous_parquet='genotype.previous.parquet'
+previous_parquet="${workdir}/parsed/genotype/genotype.previous.parquet"
 merged_file=${workdir}/parsed/genotype.merged.prior.parquet
 ${AMR_SCRIPTS}/stream_merge_parquet.py \
   --files ${workdir}/parsed/genotype/genotype.merged.parquet $previous_parquet \
