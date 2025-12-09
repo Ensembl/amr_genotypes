@@ -34,3 +34,6 @@ dist/
 build/
 eggs/
 parts/
+/*.csv.gz
+/*.csv
+/*.gff3.gz
