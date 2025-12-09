@@ -1,7 +1,10 @@
 import gzip
 import bz2
 import lzma
-import brotli
+try:
+    import brotli
+except ImportError:
+    brotli = None
 import json
 from pathlib import Path
 from typing import Any
@@ -25,7 +28,7 @@ def open_file(file_path: str | Path, mode: str = "rt"):
         return bz2.open(file, mode)
     elif file.suffix == ".xz":
         return lzma.open(file, mode)
-    elif file.suffix == ".br":
+    elif brotli and file.suffix == ".br":
         return brotli.open(file, mode)
     return open(file, mode)
 
