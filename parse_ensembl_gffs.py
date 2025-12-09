@@ -15,6 +15,7 @@ gene_fields = [
     "species",
     "assembly_accession",
     "assembly_version",
+    "annotation_build_date",
     "taxon_id",
     "stable_id",
     "version",
@@ -32,6 +33,7 @@ transcript_fields = [
     "species",
     "assembly_accession",
     "assembly_version",
+    "annotation_build_date",
     "taxon_id",
     "stable_id",
     "version",
@@ -106,6 +108,7 @@ class Cli:
                     records = 0
                     accession = None
                     version = None
+                    annotation_build_date = None
                     assembly_info = None
                     for feature in stream:
                         if accession is None:
@@ -113,10 +116,12 @@ class Cli:
                             assembly_info = lookup.assembly_summary(accession)
                         if version is None:
                             version = stream.extract_directive("genome-version")
+                        if annotation_build_date is None:
+                            annotation_build_date = stream.extract_directive("genebuild-last-updated")
                         if "gene" in feature.type:
-                            gene_csv.write_data([self.feature_to_gene(feature, assembly_info, version)])
+                            gene_csv.write_data([self.feature_to_gene(feature, assembly_info, version, annotation_build_date)])
                         elif feature.type in transcript_types:
-                            transcript_csv.write_data([self.feature_to_transcript(feature, assembly_info, version)])
+                            transcript_csv.write_data([self.feature_to_transcript(feature, assembly_info, version, annotation_build_date)])
                         else:
                             continue
                         records += 1
@@ -124,9 +129,9 @@ class Cli:
                     self.records += records
                     self.files += 1
 
-    def feature_to_gene(self, feature: Feature, assembly_info: dict[str,any], assembly_version) -> dict:
-        id = feature.attributes.get("gene_id", [""])[0]
-        version = feature.attributes.get("version", [""])[0]
+    def feature_to_gene(self, feature: Feature, assembly_info: dict[str,any], assembly_version, annotation_build_date) -> dict:
+        id = feature.get_single_attribute("gene_id")
+        version = feature.get_single_attribute("version")
         if version:
             full_id = f"{id}.{version}"
         else:
@@ -135,6 +140,7 @@ class Cli:
             "species": assembly_info.get("species"),
             "assembly_accession": assembly_info.get("assembly_ID"),
             "assembly_version": assembly_version,
+            "annotation_build_date" : annotation_build_date,
             "taxon_id": assembly_info.get("taxon_id"),
             "stable_id": id,
             "version": version,
@@ -149,7 +155,7 @@ class Cli:
             "_bin": feature.bin(),
         }
     
-    def feature_to_transcript(self, feature: Feature, assembly_info: dict[str,any], assembly_version) -> dict:
+    def feature_to_transcript(self, feature: Feature, assembly_info: dict[str,any], assembly_version, annotation_build_date) -> dict:
         id = feature.get_single_attribute("transcript_id")
         version = feature.get_single_attribute("version")
         if version:
