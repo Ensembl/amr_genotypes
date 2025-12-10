@@ -1,0 +1,113 @@
+{
+  "schema": 
+    [
+        {
+            "name": "species",
+            "type": "string",
+            "nullable" : false,
+            "description": "The species name of the organism"
+        },
+        {
+            "name": "assembly_accession",
+            "type": "string",
+            "nullable" : false,
+            "description": "The unique accession number of genome assembly (e.g., GCA_001096525.1)"
+        },
+        {
+            "name": "assembly_version",
+            "type": "string",
+            "nullable" : true,
+            "description": "Version of the assembly e.g. GRCh38"
+        },
+        {
+            "name": "annotation_build_date",
+            "type": "string",
+            "nullable" : true,
+            "description": "Date of the annotation build"
+        },
+        {
+            "name": "taxon_id",
+            "type": "int64",
+            "nullable" : false,
+            "description": "NCBI Taxonomy identifier of the organism"
+        },
+        {
+            "name": "stable_id",
+            "type": "string",
+            "nullable" : false,
+            "description": "Stable identifier for the feature (e.g., ENSG00000139618)"
+        },
+        {
+            "name": "version",
+            "type": "string",
+            "nullable" : true,
+            "description": "Version number of the stable id if one exists (may not for externally assigned identifiers)"
+        },
+        {
+            "name": "stable_id_version",
+            "type": "string",
+            "nullable" : false,
+            "description": "Combined stable id and version"
+        },
+        {
+            "name": "biotype",
+            "type": "string",
+            "nullable" : false,
+            "description": "Biotype conveys the type of feature e.g. protein_coding, miRNA, lincRNA. See Ensembl documentation for full list of biotypes"
+        },
+        {
+            "name": "region_name",
+            "type": "string",
+            "nullable" : false,
+            "description": "Name of a genomic region"
+        },
+        {
+            "name": "region_start",
+            "type": "int64",
+            "nullable" : false,
+            "description": "Start of the annotated feature"
+        },
+        {
+            "name": "region_end",
+            "type": "int64",
+            "nullable" : false,
+            "description": "End of the annotated feature"
+        },
+        {
+            "name": "strand",
+            "type": "string",
+            "nullable" : false,
+            "description": "Strand of the annotated feature. '+' indicates the forward strand, '-' indicates the reverse strand"
+        },
+        {
+            "name": "_bin",
+            "type": "int64",
+            "nullable" : false,
+            "description": "UCSC bin number for the genomic region. See [UCSC's wiki](https://genomewiki.ucsc.edu/index.php/Bin_indexing_system) for further details. Internal field"
+        },
+        {
+            "name": "tags",
+            "type": "string",
+            "nullable" : true,
+            "description": "List of semi-colon separated tags associated with the transcript"
+        },
+        {
+            "name": "transcript_support_level",
+            "type": "string",
+            "nullable" : true,
+            "description": "Assigns the support level for the transcript based on available evidence.  Not available for all genomes"
+        },
+        {
+            "name": "canonical",
+            "type": "bool",
+            "nullable" : false,
+            "description": "Indicates if this is the canonical transcript for the gene"
+        },
+        {
+            "name": "gencode_primary",
+            "type": "bool",
+            "nullable" : false,
+            "description": "Indicates if this is a GENCODE primary transcript. Not available for all genomes"
+        }
+    ]
+}

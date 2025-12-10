@@ -166,6 +166,7 @@ class Cli:
             "species": assembly_info.get("species"),
             "assembly_accession": assembly_info.get("assembly_ID"),
             "assembly_version": assembly_version,
+            "annotation_build_date" : annotation_build_date,
             "taxon_id": assembly_info.get("taxon_id"),
             "stable_id": id,
             "version": version,
