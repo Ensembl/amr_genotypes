@@ -173,8 +173,8 @@ class Lookup:
         return {}
 
     def assembly_summary(self, assembly_id: str) -> Dict[str, any]:
-        """Takes an INSDC accession (like GCA) and returns a summary dictionary
-        with taxon and assembly information.
+        """Takes an INSDC accession (like GCA, ERZ) and returns a summary dictionary
+        with taxon and assembly information. Can also support GCF via NCBI datasets API.
 
         Args:
             assembly_id (str): The id accession to look up
@@ -184,10 +184,13 @@ class Lookup:
             'Assembly_ID', 'taxon_id', 'scientific_name', 'genus', 'isolate', and 'Biosample_ID'.
             If the id is not found an empty dictionary is returned.
         """
-        req = self._safe_get(f"https://www.ebi.ac.uk/ena/browser/api/xml/{assembly_id}")
-        if not req:
-            return {}
-        return self.parse_assembly_xml(assembly_id, req.text)
+        if assembly_id.startswith("GCF"):
+            return self._process_gcf(assembly_id)
+        else:
+            req = self._safe_get(f"https://www.ebi.ac.uk/ena/browser/api/xml/{assembly_id}")
+            if req:
+                return self.parse_assembly_xml(assembly_id, req.text)
+        return {}
 
     def parse_assembly_xml(self, assembly_id, content: str) -> Dict[str, any]:
         """Parses the XML content from the ENA assembly API and returns a summary dictionary
@@ -250,6 +253,28 @@ class Lookup:
             "isolate": isolate,
             "BioSample_ID": biosample,
         }
+
+    def _process_gcf(self, gcf: str) -> Dict[str, any]:
+        """Processes a GCF accession to return assembly summary information.
+
+        Args:
+            gcf (str): The GCF accession    
+        """
+        url = f"https://api.ncbi.nlm.nih.gov/datasets/v2/genome/accession/{gcf}/dataset_report"
+        resp = self._safe_get(url)
+        hit = resp.json().get("reports", [])
+        if hit:
+            scientific_name = hit[0]["organism"]["organism_name"]
+            genus = scientific_name.split(" ")[0]
+            return {
+                "assembly_ID": gcf,
+                "taxon_id": hit[0]["organism"]["tax_id"],
+                "species": scientific_name,
+                "organism": scientific_name,
+                "genus": genus,
+                "isolate": False,
+                "BioSample_ID": hit[0]["assembly_info"]["bioproject_accession"],
+            }
 
     def _search_ols(
         self, antibiotic: str, ontology: str, children_of: str
