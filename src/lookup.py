@@ -274,9 +274,12 @@ class Lookup:
                 "species": scientific_name,
                 "organism": scientific_name,
                 "genus": genus,
-                "isolate": False,
-                "BioSample_ID": hit[0]["assembly_info"]["bioproject_accession"],
+                "isolate": "",
+                "BioSample_ID": hit[0]["assembly_info"]
+                .get("biosample", {})
+                .get("accession", ""),
             }
+        return {}
 
     def _search_ols(
         self, antibiotic: str, ontology: str, children_of: str

@@ -8,3 +8,4 @@ duckdb
 pandas
 tabulate
 pyyaml
+gql[requests]

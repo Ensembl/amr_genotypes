@@ -9,6 +9,9 @@ from src.writer import Formats, StreamingAmrWriter
 from src.gff_parser import GFF3StreamingParser, Feature
 from src.lookup import Lookup
 
+from gql import gql, Client
+from gql.transport.requests import RequestsHTTPTransport
+
 log = logging.getLogger(__name__)
 
 gene_fields = [
@@ -132,6 +135,7 @@ class Cli:
             args.output_transcripts, columns=transcript_fields, format=Formats.CSV
         ) as transcript_csv:
             for file in files:
+                log.info(f"Processing GFF file {file}")
                 with GFF3StreamingParser(path=file) as stream:
                     records = 0
                     accession = None
@@ -143,7 +147,13 @@ class Cli:
                             accession = stream.extract_directive(
                                 "genome-build-accession"
                             )
+                        if assembly_info is None:
                             assembly_info = lookup.assembly_summary(accession)
+                            # If we can't get it from the lookup it's probably a GCF that
+                            # no longer exists in RefSeq (e.g. v1 vs. v2). Since we have
+                            # it in the GraphQL endpoint we go to there
+                            if assembly_info is None:
+                                assembly_info = self.assembly_from_graphql(accession)
                         if version is None:
                             version = stream.extract_directive("genome-version")
                         if annotation_build_date is None:
@@ -175,7 +185,7 @@ class Cli:
                         else:
                             continue
                         records += 1
-                    log.info(f"Processed {records} features from file {file}")
+                    log.info(f"Processed {records} features")
                     self.records += records
                     self.files += 1
 
@@ -248,6 +258,37 @@ class Cli:
         vals["canonical"] = "Ensembl_canonical" in tags
         vals["gencode_primary"] = "gencode_primary" in tags
         return vals
+
+    def assembly_from_graphql(self, accession: str) -> dict[str, any]:
+        transport = RequestsHTTPTransport(
+            url="https://beta.ensembl.org/data/graphql",
+            use_json=True,
+        )
+        client = Client(transport=transport, fetch_schema_from_transport=True)
+        query = gql(
+            """
+        query ($accession: String!) {
+          genomes(by_keyword: { assembly_accession_id : $accession } ) {
+            genome_id
+            assembly_accession
+            scientific_name
+            taxon_id
+          }
+        }
+        """
+        )
+        variables = {"accession": accession}
+        result = client.execute(query, variable_values=variables)
+        hit = result.get("genomes")[0]
+        return {
+            "assembly_ID": hit["assembly_accession"],
+            "species": hit["scientific_name"],
+            "taxon_id": hit["taxon_id"],
+            "organism": hit["scientific_name"],
+            "genus": hit["scientific_name"].split(" ")[0],
+            "isolate": "",
+            "BioSample_ID": "",
+        }
 
 
 if __name__ == "__main__":
