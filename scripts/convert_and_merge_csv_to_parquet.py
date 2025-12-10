@@ -136,11 +136,16 @@ def main():
         schema=schema,
     )
     if len(parquet_files) > 1:
+        log.info("Merging files")
         merge_parquet_files(parquet_files, args.merged_file)
     else:
-        log.info(
-            f"Only one Parquet file generated. Copying {parquet_files[0]} to {args.merged_file}"
-        )
+        log.info("Only one Parquet file generated. No merge needed")
+        if parquet_files[0].samefile(args.merged_file):
+            log.info(
+                f"The generated Parquet file is already at the desired merged location: {args.merged_file}"
+            )
+        else:
+            log.info(f"Copying {parquet_files[0]} to {args.merged_file}")
         shutil.copyfile(parquet_files[0], args.merged_file)
 
 
