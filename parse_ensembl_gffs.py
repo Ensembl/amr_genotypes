@@ -152,7 +152,7 @@ class Cli:
                             # If we can't get it from the lookup it's probably a GCF that
                             # no longer exists in RefSeq (e.g. v1 vs. v2). Since we have
                             # it in the GraphQL endpoint we go to there
-                            if assembly_info is None:
+                            if not assembly_info:
                                 assembly_info = self.assembly_from_graphql(accession)
                         if version is None:
                             version = stream.extract_directive("genome-version")
