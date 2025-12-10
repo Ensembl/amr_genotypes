@@ -187,7 +187,9 @@ class Lookup:
         if assembly_id.startswith("GCF"):
             return self._process_gcf(assembly_id)
         else:
-            req = self._safe_get(f"https://www.ebi.ac.uk/ena/browser/api/xml/{assembly_id}")
+            req = self._safe_get(
+                f"https://www.ebi.ac.uk/ena/browser/api/xml/{assembly_id}"
+            )
             if req:
                 return self.parse_assembly_xml(assembly_id, req.text)
         return {}
@@ -258,7 +260,7 @@ class Lookup:
         """Processes a GCF accession to return assembly summary information.
 
         Args:
-            gcf (str): The GCF accession    
+            gcf (str): The GCF accession
         """
         url = f"https://api.ncbi.nlm.nih.gov/datasets/v2/genome/accession/{gcf}/dataset_report"
         resp = self._safe_get(url)

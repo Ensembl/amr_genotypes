@@ -1,6 +1,7 @@
 import gzip
 import bz2
 import lzma
+
 try:
     import brotli
 except ImportError:

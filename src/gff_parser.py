@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Iterator, Optional, Tuple, Union
 from .utils import open_file, bin_from_range_extended
 
+
 @dataclass
 class Feature:
     seqid: str
@@ -17,13 +18,13 @@ class Feature:
     phase: Optional[int]
     attributes: Dict[str, Union[str, List[str]]]
     line_no: int = -1
-    raw: str = ''
+    raw: str = ""
     parent_ids: List[str] = field(default_factory=list)
-    children: List['Feature'] = field(default_factory=list)
+    children: List["Feature"] = field(default_factory=list)
 
     def __post_init__(self):
         # Normalize parent_ids from attributes if available
-        p = self.attributes.get('Parent')
+        p = self.attributes.get("Parent")
         if p:
             if isinstance(p, list):
                 self.parent_ids = p
@@ -31,7 +32,7 @@ class Feature:
                 self.parent_ids = [p]
 
     def id(self) -> Optional[str]:
-        v = self.attributes.get('ID')
+        v = self.attributes.get("ID")
         if isinstance(v, list):
             return v[0]
         return v
@@ -41,12 +42,13 @@ class Feature:
         return (self.seqid, self.start, self.end, self.type, self.id())
 
     def __repr__(self):
-        return (f"Feature({self.seqid}:{self.start}-{self.end} {self.type}"
-                f" id={self.id()!r} parents={self.parent_ids})")
-    
+        return (
+            f"Feature({self.seqid}:{self.start}-{self.end} {self.type}"
+            f" id={self.id()!r} parents={self.parent_ids})"
+        )
+
     def get_single_attribute(self, key: str, default=None) -> Optional[str]:
-        """Get a single attribute value for the given key, or default if not present.
-        """
+        """Get a single attribute value for the given key, or default if not present."""
         v = self.attributes.get(key, default)
         if isinstance(v, list):
             return v[0]
@@ -62,8 +64,8 @@ class Feature:
         if isinstance(v, list):
             return v
         return [v]
-    
-    def get_concatenated_attribute(self, key: str, sep: str = ';') -> str:
+
+    def get_concatenated_attribute(self, key: str, sep: str = ";") -> str:
         """Get the attribute value(s) for the given key as a concatenated string.
         If the attribute is not present, returns an empty string.
         """
@@ -73,6 +75,7 @@ class Feature:
     def bin(self) -> int:
         """Compute the extended bin for this feature's range."""
         return bin_from_range_extended(self.start - 1, self.end)
+
 
 class GFF3Parser:
     """Iterator/parser for GFF3 files.
@@ -102,10 +105,10 @@ class GFF3Parser:
     def extract_directive(self, directive_name: str) -> str:
         for index, line in self.directives:
             if line.startswith(f"#!{directive_name}"):
-                return line[len(directive_name)+2:].strip()
+                return line[len(directive_name) + 2 :].strip()
         for index, line in self.comments:
             if line.startswith(f"#!{directive_name}"):
-                return line[len(directive_name)+2:].strip()
+                return line[len(directive_name) + 2 :].strip()
         return ""
 
     @staticmethod
@@ -122,18 +125,18 @@ class GFF3Parser:
         - Bare keys (no '=') are represented as an empty-string value [''].
         """
         attrs: Dict[str, List[str]] = {}
-        if not attrtext or attrtext == '.':
+        if not attrtext or attrtext == ".":
             return attrs
 
-        parts = [p for p in attrtext.split(';') if p != '']
+        parts = [p for p in attrtext.split(";") if p != ""]
         for part in parts:
-            if '=' in part:
-                k, v = part.split('=', 1)
+            if "=" in part:
+                k, v = part.split("=", 1)
                 k = urllib.parse.unquote(k)
                 # Keep percent-decoding semantics; do NOT use unquote_plus
                 v_decoded = urllib.parse.unquote(v)
                 # Split on commas to produce a list, even if single item
-                values = [x for x in v_decoded.split(',')]
+                values = [x for x in v_decoded.split(",")]
                 if k in attrs:
                     attrs[k].extend(values)
                 else:
@@ -142,13 +145,13 @@ class GFF3Parser:
                 # Bare key -> empty string value
                 k = urllib.parse.unquote(part)
                 if k in attrs:
-                    attrs[k].append('')
+                    attrs[k].append("")
                 else:
-                    attrs[k] = ['']
+                    attrs[k] = [""]
         return attrs
 
     def _parse_feature_line(self, line: str, line_no: int) -> Optional[Feature]:
-        parts = line.rstrip('\n').split('\t')
+        parts = line.rstrip("\n").split("\t")
         if len(parts) != 9:
             # not a feature line
             return None
@@ -159,16 +162,16 @@ class GFF3Parser:
         except ValueError:
             raise ValueError(f"Invalid start/end at line {line_no}: {start},{end}")
         score_v: Optional[float]
-        if score == '.' or score.strip() == '':
+        if score == "." or score.strip() == "":
             score_v = None
         else:
             try:
                 score_v = float(score)
             except ValueError:
                 score_v = None
-        strand_v = strand if strand in ('+', '-', '.') else None
+        strand_v = strand if strand in ("+", "-", ".") else None
         phase_v: Optional[int]
-        if phase == '.' or phase.strip() == '':
+        if phase == "." or phase.strip() == "":
             phase_v = None
         else:
             try:
@@ -176,9 +179,19 @@ class GFF3Parser:
             except ValueError:
                 phase_v = None
         attrs = self._parse_attributes(attributes)
-        feat = Feature(seqid=seqid, source=source, type=typ, start=start_i, end=end_i,
-                       score=score_v, strand=strand_v, phase=phase_v,
-                       attributes=attrs, line_no=line_no, raw=line.rstrip('\n'))
+        feat = Feature(
+            seqid=seqid,
+            source=source,
+            type=typ,
+            start=start_i,
+            end=end_i,
+            score=score_v,
+            strand=strand_v,
+            phase=phase_v,
+            attributes=attrs,
+            line_no=line_no,
+            raw=line.rstrip("\n"),
+        )
         return feat
 
     def _parse(self):
@@ -187,12 +200,12 @@ class GFF3Parser:
         seq_chunks: List[str] = []
         with open_file(self.path) as fh:
             for i, raw in enumerate(fh, start=1):
-                line = raw.rstrip('\n')
+                line = raw.rstrip("\n")
                 if in_fasta:
-                    if line.startswith('>'):
+                    if line.startswith(">"):
                         # save previous
                         if current_fasta_name is not None:
-                            self.fasta[current_fasta_name] = ''.join(seq_chunks)
+                            self.fasta[current_fasta_name] = "".join(seq_chunks)
                         current_fasta_name = line[1:].strip().split()[0]
                         seq_chunks = []
                     else:
@@ -201,14 +214,14 @@ class GFF3Parser:
 
                 if not line:
                     continue
-                if line.startswith('##'):
+                if line.startswith("##"):
                     self.directives.append((i, line))
-                    if line.strip().upper() == '##FASTA':
+                    if line.strip().upper() == "##FASTA":
                         in_fasta = True
                         current_fasta_name = None
                         seq_chunks = []
                     continue
-                if line.startswith('#'):
+                if line.startswith("#"):
                     self.comments.append((i, line))
                     continue
                 # Feature line
@@ -222,7 +235,7 @@ class GFF3Parser:
                             self.id_index[fid] = feat
         # finish any fasta
         if in_fasta and current_fasta_name is not None:
-            self.fasta[current_fasta_name] = ''.join(seq_chunks)
+            self.fasta[current_fasta_name] = "".join(seq_chunks)
 
         # Build parent-child relationships
         for feat in self.features:
@@ -253,30 +266,43 @@ class GFF3Parser:
             attrs = []
             for k, v in f.attributes.items():
                 if isinstance(v, list):
-                    val = ','.join(v)
+                    val = ",".join(v)
                 else:
                     val = v
                 # percent-encode keys and values to be safe
-                key_enc = urllib.parse.quote(k, safe='')
-                val_enc = urllib.parse.quote(str(val), safe='')
+                key_enc = urllib.parse.quote(k, safe="")
+                val_enc = urllib.parse.quote(str(val), safe="")
                 attrs.append(f"{key_enc}={val_enc}")
-            attrcol = ';'.join(attrs) if attrs else '.'
-            score = '.' if f.score is None else str(f.score)
-            strand = f.strand if f.strand is not None else '.'
-            phase = '.' if f.phase is None else str(f.phase)
-            yield '\t'.join([f.seqid, f.source, f.type, str(f.start), str(f.end), score, strand, phase, attrcol])
+            attrcol = ";".join(attrs) if attrs else "."
+            score = "." if f.score is None else str(f.score)
+            strand = f.strand if f.strand is not None else "."
+            phase = "." if f.phase is None else str(f.phase)
+            yield "\t".join(
+                [
+                    f.seqid,
+                    f.source,
+                    f.type,
+                    str(f.start),
+                    str(f.end),
+                    score,
+                    strand,
+                    phase,
+                    attrcol,
+                ]
+            )
         if self.fasta:
-            yield '##FASTA'
+            yield "##FASTA"
             for name, seq in self.fasta.items():
                 yield f">{name}"
                 # wrap at 60 chars
                 for i in range(0, len(seq), 60):
-                    yield seq[i:i+60]
+                    yield seq[i : i + 60]
+
 
 class GFF3StreamingParser:
     _parse_attributes = staticmethod(GFF3Parser._parse_attributes)
     _parse_feature_line = GFF3Parser._parse_feature_line
-    
+
     """A streaming GFF3 parser that yields Feature objects without holding everything in memory.
 
     - Does not build parent/child relationships or store an ID index.
@@ -292,6 +318,7 @@ class GFF3StreamingParser:
             for name, seq in stream.fasta_generator():
                 handle_sequence(name, seq)
     """
+
     def __init__(self, path: str):
         self.path = path
         self._fh = None
@@ -318,15 +345,15 @@ class GFF3StreamingParser:
             self._fh = open_file(self.path)
         in_fasta = False
         for i, raw in enumerate(self._fh, start=1):
-            line = raw.rstrip('\n')
+            line = raw.rstrip("\n")
             if in_fasta:
                 # once FASTA begins, stop yielding features
                 break
             if not line:
                 continue
-            if line.startswith('##'):
+            if line.startswith("##"):
                 self.directives.append((i, line))
-                if line.strip().upper() == '##FASTA':
+                if line.strip().upper() == "##FASTA":
                     in_fasta = True
                     # remember file position for fasta_generator if possible
                     try:
@@ -335,7 +362,7 @@ class GFF3StreamingParser:
                     except Exception:
                         self._fasta_start_pos = None
                 continue
-            if line.startswith('#'):
+            if line.startswith("#"):
                 self.comments.append((i, line))
                 continue
             feat = GFF3Parser._parse_feature_line(self, line, i)
@@ -348,10 +375,10 @@ class GFF3StreamingParser:
     def extract_directive(self, directive_name: str) -> str:
         for index, line in self.directives:
             if line.startswith(f"#!{directive_name}"):
-                return line[len(directive_name)+2:].strip()
+                return line[len(directive_name) + 2 :].strip()
         for index, line in self.comments:
             if line.startswith(f"#!{directive_name}"):
-                return line[len(directive_name)+2:].strip()
+                return line[len(directive_name) + 2 :].strip()
         return ""
 
     def fasta_generator(self):
@@ -371,23 +398,23 @@ class GFF3StreamingParser:
                 fh = open_file(self.path)
                 # advance to FASTA marker
                 for line in fh:
-                    if line.startswith('##FASTA'):
+                    if line.startswith("##FASTA"):
                         break
             current_name = None
             seq_chunks = []
             for raw in fh:
-                line = raw.rstrip('\n')
+                line = raw.rstrip("\n")
                 if not line:
                     continue
-                if line.startswith('>'):
+                if line.startswith(">"):
                     if current_name is not None:
-                        yield current_name, ''.join(seq_chunks)
+                        yield current_name, "".join(seq_chunks)
                     current_name = line[1:].strip().split()[0]
                     seq_chunks = []
                 else:
                     seq_chunks.append(line.strip())
             if current_name is not None:
-                yield current_name, ''.join(seq_chunks)
+                yield current_name, "".join(seq_chunks)
         finally:
             # if we opened a new file handle, close it
             if fh is not None and fh is not self._fh:
@@ -395,4 +422,3 @@ class GFF3StreamingParser:
                     fh.close()
                 except Exception:
                     pass
-

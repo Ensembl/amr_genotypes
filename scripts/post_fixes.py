@@ -46,13 +46,13 @@ def update_genotype(con) -> None:
     print("Updating the genotype table")
     # print(" > Updating genotype species names from phenotype")
     table = "genotype"
-#     query = """
-# UPDATE genotype 
-# SET species = phenotype.species 
-# FROM phenotype 
-# WHERE genotype.BioSample_ID = phenotype.BioSample_ID and genotype.assembly_ID = phenotype.assembly_ID;
-# """
-#     con.execute(query)
+    #     query = """
+    # UPDATE genotype
+    # SET species = phenotype.species
+    # FROM phenotype
+    # WHERE genotype.BioSample_ID = phenotype.BioSample_ID and genotype.assembly_ID = phenotype.assembly_ID;
+    # """
+    #     con.execute(query)
     for overrides in species_names_override:
         print(f" > Applying specific override for {overrides[1]}")
         con.execute("UPDATE genotype SET species =? WHERE species=?", overrides)
@@ -82,7 +82,9 @@ def update_genotype(con) -> None:
         "UPDATE genotype SET species = COALESCE(NULLIF(regexp_extract(species, ?), ''), species)",
         ["^(\\S+\\s+\\S+)"],
     )
-    print(" > Ensuring the species are 'Upper lower' formatted e.g. Haemophilus influenzae")
+    print(
+        " > Ensuring the species are 'Upper lower' formatted e.g. Haemophilus influenzae"
+    )
     con.execute(
         """UPDATE genotype SET species = upper(left(species, 1)) || lower(substr(species, 2))"""
     )

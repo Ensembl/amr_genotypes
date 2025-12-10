@@ -14,6 +14,7 @@ import pyarrow.parquet as pq
 import logging
 from src.schema import load_schema_from_config
 from src.config import parquet
+import shutil
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -39,14 +40,36 @@ def convert_csv_to_parquet(
         false_values=["False", "false", "no"],
         strings_can_be_null=True,
     )
+    read_opts = pv.ReadOptions(use_threads=True)
 
     parquet_files = []
     for csv_file in csv_files:
-        table = pv.read_csv(csv_file, convert_options=convert_opts)
+        reader = pv.open_csv(
+            csv_file, read_options=read_opts, convert_options=convert_opts
+        )
+        writer = None
         parquet_path = output_dir / f"{csv_file.stem}.parquet"
-        pq.write_table(table, parquet_path)
-        parquet_files.append(parquet_path)
-        log.info(f"Converted {csv_file.name} -> {parquet_path.name}")
+        try:
+            batch_number = 0
+            for batch in reader:
+                batch_number += 1
+                table = pa.Table.from_batches([batch])
+                if writer is None:
+                    writer = pq.ParquetWriter(
+                        parquet_path,
+                        schema=table.schema,
+                        compression=parquet["compression"],
+                        compression_level=parquet["compression_level"],
+                    )
+                writer.write_table(table)
+            if writer is not None:
+                parquet_files.append(parquet_path)
+                log.info(f"Converted {csv_file.name} → {parquet_path.name}")
+            else:
+                log.warning(f"CSV file {csv_file.name} contained no rows.")
+        finally:
+            if writer is not None:
+                writer.close()
 
     return parquet_files
 
@@ -112,7 +135,13 @@ def main():
         pattern=args.pattern,
         schema=schema,
     )
-    merge_parquet_files(parquet_files, args.merged_file)
+    if len(parquet_files) > 1:
+        merge_parquet_files(parquet_files, args.merged_file)
+    else:
+        log.info(
+            f"Only one Parquet file generated. Copying {parquet_files[0]} to {args.merged_file}"
+        )
+        shutil.copyfile(parquet_files[0], args.merged_file)
 
 
 if __name__ == "__main__":
