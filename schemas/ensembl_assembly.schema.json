@@ -1,0 +1,100 @@
+{
+  "schema": [
+    {
+      "name": "species_key",
+      "type": "string",
+      "nullable": false,
+      "description": "Internal key used in the source JSON for this species entry (e.g. 'Escherichia_coli_str_K_12_substr_MG1655_str_K12')"
+    },
+    {
+      "name": "scientific_name",
+      "type": "string",
+      "nullable": false,
+      "description": "Full scientific name of the organism"
+    },
+    {
+      "name": "taxon_id",
+      "type": "int64",
+      "nullable": false,
+      "description": "NCBI Taxonomy identifier of the organism"
+    },
+    {
+      "name": "species_taxon_id",
+      "type": "int64",
+      "nullable": false,
+      "description": "Species-level NCBI Taxonomy identifier"
+    },
+    {
+      "name": "common_name",
+      "type": "string",
+      "nullable": true,
+      "description": "Common name of the organism (if available)"
+    },
+    {
+      "name": "type",
+      "type": "string",
+      "nullable": true,
+      "description": "Type label for the species entry (freeform, e.g. 'strain' or other classification)"
+    },
+    {
+      "name": "type_class",
+      "type": "string",
+      "nullable": true,
+      "description": "Type class for the species entry (e.g. 'strain', 'subspecies', 'isolate')"
+    },
+    {
+      "name": "biosample_id",
+      "type": "string",
+      "nullable": true,
+      "description": "Biosample identifier associated with the strain (e.g. SAMN...)"
+    },
+    {
+      "name": "assembly_accession",
+      "type": "string",
+      "nullable": true,
+      "description": "Assembly accession (e.g. GCA_000005845.2)"
+    },
+    {
+      "name": "assembly_name",
+      "type": "string",
+      "nullable": true,
+      "description": "Human-readable assembly name (e.g. ASM584v2)"
+    },
+    {
+      "name": "assembly_level",
+      "type": "string",
+      "nullable": true,
+      "description": "Assembly level (e.g. 'chromosome', 'scaffold', 'contig')"
+    },
+    {
+      "name": "provider",
+      "type": "string",
+      "nullable": false,
+      "description": "Genebuild provider key (e.g. 'community', 'ensembl')"
+    },
+    {
+      "name": "release",
+      "type": "string",
+      "nullable": true,
+      "description": "Provider release identifier or date key (e.g. '2018_09')"
+    },
+    {
+      "name": "homologies",
+      "type": "bool",
+      "nullable": false,
+      "description": "Whether homology files are available for this provider/release (true/false)"
+    },
+    {
+      "name": "variation",
+      "type": "bool",
+      "nullable": false,
+      "description": "Whether variation files are available for this provider/release (true/false)"
+    },
+    {
+      "name": "regulation",
+      "type": "bool",
+      "nullable": false,
+      "description": "Whether regulation files are available for this provider/release (true/false)"
+    }
+  ]
+}

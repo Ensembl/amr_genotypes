@@ -146,7 +146,7 @@ def main():
             )
         else:
             log.info(f"Copying {parquet_files[0]} to {args.merged_file}")
-        shutil.copyfile(parquet_files[0], args.merged_file)
+            shutil.copyfile(parquet_files[0], args.merged_file)
 
 
 if __name__ == "__main__":
