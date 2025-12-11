@@ -154,6 +154,10 @@ class Cli:
                             # it in the GraphQL endpoint we go to there
                             if not assembly_info:
                                 assembly_info = self.assembly_from_graphql(accession)
+                            if not assembly_info:
+                                log.warning(
+                                    f"Could not find assembly information for accession {accession}. Skipping file {file}")
+                                break
                         if version is None:
                             version = stream.extract_directive("genome-version")
                         if annotation_build_date is None:
