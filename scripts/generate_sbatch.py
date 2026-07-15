@@ -74,6 +74,11 @@ def write_template(args, split_count: int):
     template = template.replace("{QUEUE}", args.queue)
     template = template.replace("{MEMORY}", args.memory)
     template = template.replace("{TOTAL_FILES}", f"{split_count-1:0>2}")
+    if args.use_container:
+        python_cmd = f"singularity run {args.use_container.absolute()} python3"
+    else:
+        python_cmd = "python3"
+    template = template.replace("{PYTHON_CMD}", python_cmd)
     print(f"Writing new template to {args.output}")
     with open(args.output, "wt") as fh:
         fh.write(template)
@@ -133,6 +138,15 @@ def arg_parser():
         required=False,
         default="16G",
         help="Memory to reserve",
+    )
+    parser.add_argument(
+        "--use-container",
+        type=Path,
+        required=False,
+        default=None,
+        help="Path to a Singularity/Apptainer image. If given, the generated "
+             "sbatch script will run python3 via 'singularity run <path> python3' "
+             "instead of calling python3 directly",
     )
     return parser
 
