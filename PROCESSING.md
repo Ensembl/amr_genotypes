@@ -83,7 +83,7 @@ python3 ${AMR_SCRIPTS}/generate_sbatch.py \
   --output $target_batch \
   --memory 16GB \
   --previously-processed $previously_processed \
-  --use-container /path/to/amr_genotypes.sif
+  --use-container /path/to/amr_etl_pipeline.img
 ```
 
 This generates an `sbatch` script that runs each job as `singularity run /path/to/amr_etl_pipeline.img python3 ...` instead of calling `python3` directly.
