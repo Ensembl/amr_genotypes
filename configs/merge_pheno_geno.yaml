@@ -57,3 +57,5 @@ right_cols:
   - "evidence_type"
   - "evidence_link"
   - "evidence_description"
+  - "evidence_sequence_coverage"
+  - "evidence_sequence_identity"
