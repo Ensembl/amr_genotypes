@@ -256,7 +256,7 @@ class Processor:
                             amr_records[feature.id] if feature.id in amr_records else {}
                         )
 
-                        record["AMRFinderPlus_method"] = amrfinder.get("Method", "NA")
+                        record["amrfinderplus_method"] = amrfinder.get("Method", "NA")
                         record["reference_accession"] = amrfinder.get("Closest_reference_accession", "NA")
                         record["reference_name"] = amrfinder.get("Closest_reference_name", "NA")
                         record["reference_sequence_coverage"] = amrfinder.get("%_Coverage_of_reference", "NA")
