@@ -158,13 +158,13 @@
     },
     {
       "name": "reference_sequence_coverage",
-      "type": "float32",
+      "type": "decimal128",
       "nullable" : true,
       "description": "% coverage of the closest reference sequence"
     },
     {
       "name": "reference_sequence_identity",
-      "type": "float32",
+      "type": "decimal128",
       "nullable" : true,
       "description": "% identity of the closest reference sequence"
     },
