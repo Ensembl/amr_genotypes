@@ -139,28 +139,58 @@
       "description": "Link to ontology entry for the antibiotic"
     },
     {
-      "name": "evidence_accession",
+      "name": "amrfinderplus_method",
       "type": "string",
       "nullable" : true,
-      "description": "Accession number for evidence supporting the predicted AMR resistance"
+      "description": "Method used by AMRFinderPlus to predict AMR resistance"
     },
     {
-      "name": "evidence_type",
+      "name": "reference_accession",
       "type": "string",
       "nullable" : true,
-      "description": "Type of evidence supporting the predicted AMR resistance"
+      "description": "Accession of the closest reference sequence"
     },
     {
-      "name": "evidence_link",
+      "name": "reference_name",
       "type": "string",
       "nullable" : true,
-      "description": "Link to the evidence supporting the predicted AMR resistance"
+      "description": "Name of the closest reference sequence"
     },
     {
-      "name": "evidence_description",
+      "name": "reference_sequence_coverage",
+      "type": "float32",
+      "nullable" : true,
+      "description": "% coverage of the closest reference sequence"
+    },
+    {
+      "name": "reference_sequence_identity",
+      "type": "float32",
+      "nullable" : true,
+      "description": "% identity of the closest reference sequence"
+    },
+    {
+      "name": "HMM_evidence_accession",
       "type": "string",
       "nullable" : true,
-      "description": "Evidence description supporting the predicted AMR resistance"
+      "description": "Accession number for HMM evidence supporting the predicted AMR resistance"
+    },
+    {
+      "name": "HMM_evidence_link",
+      "type": "string",
+      "nullable" : true,
+      "description": "Link to the HMM evidence supporting the predicted AMR resistance"
+    },
+    {
+      "name": "annotation_tool_version",
+      "type": "string",
+      "nullable" : true,
+      "description": "Version of mettannotator used to generate the annotation"
+    },
+    {
+      "name": "annotation_tool_mode",
+      "type": "string",
+      "nullable" : true,
+      "description": "Mettannotator mode used to generate the annotation"
     }
   ]
 }
