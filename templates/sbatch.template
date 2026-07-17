@@ -12,6 +12,7 @@
 # - `QUEUE` = queue to submit to
 # - `GFF_SOURCE` = directory where GFFs are stored. Use a fully resolved path to help with filtering
 # - `PYTHON_CMD` = command used to invoke python3, e.g. `python3` or `singularity run <container> python3` if --use-container is given
+# - `ANNOTATION_METADATA` = path to the CSV mapping assembly accessions to annotation_tool_version/annotation_tool_mode. Mandatory: every assembly being processed must have an entry here or the job will error out
 
 #####
 # Expected directory structure commands
@@ -24,7 +25,7 @@
 # find {GFF_SOURCE} -name '*.gff.gz' > file.list
 # awk 'NR==FNR {seen[$0]; next} !($0 in seen)' old.list file.list > gffs.list
 # split -l 5000 --numeric-suffixes=00 --verbose gffs.list split.gff.
-# Creates a set of split files each with 5k. Use the number of files to create the array below
+# Creates a set of split files each with 5k. Use the number of files to create the array below
 
 #SBATCH --time=4:00:00   # walltime
 #SBATCH --ntasks=1   # number of tasks
@@ -47,4 +48,4 @@ data_dir={BASE_DIR}
 output_dir=${data_dir}/parsed
 file=${data_dir}/split.gff.${task_id}
 echo "Processing file: ${file} which contains $(wc -l $file | awk '{print $1}' ) records"
-{PYTHON_CMD} {PARSE_AMR_PY} --files-list $file --output ${output_dir}/genotype/genotype.${task_id}.csv --output-assembly ${output_dir}/assembly/assembly.${task_id}.csv
+{PYTHON_CMD} {PARSE_AMR_PY} --files-list $file --output ${output_dir}/genotype/genotype.${task_id}.csv --output-assembly ${output_dir}/assembly/assembly.${task_id}.csv --annotation-metadata {ANNOTATION_METADATA}

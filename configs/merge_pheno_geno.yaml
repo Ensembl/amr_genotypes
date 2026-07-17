@@ -59,3 +59,5 @@ right_cols:
   - "evidence_description"
   - "evidence_sequence_coverage"
   - "evidence_sequence_identity"
+  - "annotation_tool_version"
+  - "annotation_tool_mode"

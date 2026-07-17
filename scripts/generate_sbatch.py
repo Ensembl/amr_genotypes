@@ -79,6 +79,9 @@ def write_template(args, split_count: int):
     else:
         python_cmd = "python3"
     template = template.replace("{PYTHON_CMD}", python_cmd)
+    template = template.replace(
+        "{ANNOTATION_METADATA}", str(args.annotation_metadata.absolute())
+    )
     print(f"Writing new template to {args.output}")
     with open(args.output, "wt") as fh:
         fh.write(template)
@@ -145,8 +148,18 @@ def arg_parser():
         required=False,
         default=None,
         help="Path to a Singularity/Apptainer image. If given, the generated "
-             "sbatch script will run python3 via 'singularity run <path> python3' "
-             "instead of calling python3 directly",
+        "sbatch script will run python3 via 'singularity run <path> python3' "
+        "instead of calling python3 directly",
+    )
+    parser.add_argument(
+        "--annotation-metadata",
+        type=Path,
+        required=True,
+        help="Path to a CSV mapping assembly accessions to the annotation "
+        "tool version and mode used to generate them. Passed through to "
+        "parse_amr.py's --annotation-metadata argument, which is mandatory: "
+        "every assembly processed must have an entry or the job will error out. "
+        "Expected header: assembly_ID,annotation_tool_version,annotation_tool_mode",
     )
     return parser
 

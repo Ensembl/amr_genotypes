@@ -35,6 +35,8 @@ default_output_columns = [
     "evidence_description",
     "evidence_sequence_coverage",
     "evidence_sequence_identity",
+    "annotation_tool_version",
+    "annotation_tool_mode",
 ]
 
 # Mapping of output column names to GFF attribute names if different
@@ -68,8 +70,15 @@ _region_fields = [
     "strand",
     "_bin",
 ]
+# These come from the annotation metadata CSV (keyed by assembly accession), not
+# from GFF column 9 attributes, so they must be excluded here the same way
+# assembly_fields and _region_fields are
+_annotation_metadata_fields = [
+    "annotation_tool_version",
+    "annotation_tool_mode",
+]
 default_feature_fields = [
-    c for c in default_output_columns if c not in assembly_fields + _region_fields
+    c for c in default_output_columns if c not in assembly_fields + _region_fields + _annotation_metadata_fields
 ]
 
 parquet = {
