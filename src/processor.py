@@ -256,24 +256,27 @@ class Processor:
                             amr_records[feature.id] if feature.id in amr_records else {}
                         )
 
+                        record["AMRFinderPlus_method"] = amrfinder.get("Method", "NA")
+                        record["reference_accession"] = amrfinder.get("Closest_reference_accession", "NA")
+                        record["reference_name"] = amrfinder.get("Closest_reference_name", "NA")
+                        record["reference_sequence_coverage"] = amrfinder.get("%_Coverage_of_reference", "NA")
+                        record["reference_sequence_identity"] = amrfinder.get("%_Identity_to_reference", "NA")
+
                         if (
                             "HMM_accession" in amrfinder
                             and amrfinder["HMM_accession"] != "NA"
                         ):
-                            record["evidence_accession"] = amrfinder["HMM_accession"]
-                            record["evidence_type"] = "HMM"
+                            record["HMM_evidence_accession"] = amrfinder["HMM_accession"]
                             # Link needs to have version removed and trailing slash added
                             hmm_accession_clean = re.sub(
                                 r"\.\d+$", "/", amrfinder["HMM_accession"]
                             )
-                            record["evidence_link"] = (
+                            record["HMM_evidence_link"] = (
                                 f"{ncbi_evidence_link}{hmm_accession_clean}"
                             )
-                            record["evidence_description"] = amrfinder[
+                            record["HMM_evidence_description"] = amrfinder[
                                 "HMM_description"
                             ]
-                            record["evidence_sequence_coverage"] = amrfinder["%_Coverage_of_reference"]
-                            record["evidence_sequence_identity"] = amrfinder["%_Identity_to_reference"]
 
                         amr_class = amrfinder.get("Class", "NA")
                         amr_subclass = amrfinder.get("Subclass", "NA")
