@@ -209,6 +209,8 @@ class Processor:
                             record["evidence_description"] = amrfinder[
                                 "HMM_description"
                             ]
+                            record["evidence_sequence_coverage"] = amrfinder["%_Coverage_of_reference"]
+                            record["evidence_sequence_identity"] = amrfinder["%_Identity_to_reference"]
 
                         amr_class = amrfinder.get("Class", "NA")
                         amr_subclass = amrfinder.get("Subclass", "NA")

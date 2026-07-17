@@ -33,6 +33,8 @@ default_output_columns = [
     "evidence_type",
     "evidence_link",
     "evidence_description",
+    "evidence_sequence_coverage",
+    "evidence_sequence_identity",
 ]
 
 # Mapping of output column names to GFF attribute names if different
