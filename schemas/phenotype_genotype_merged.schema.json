@@ -319,6 +319,12 @@
       "description": "Link to the HMM evidence supporting the predicted AMR resistance"
     },
     {
+      "name": "HMM_evidence_description",
+      "type": "string",
+      "nullable" : true,
+      "description": "Description of HMM evidence that supports the predicted AMR resistance"
+    },
+    {
       "name": "annotation_tool_version",
       "type": "string",
       "nullable" : true,
