@@ -303,8 +303,8 @@ class Processor:
                                         )
                                     # Both lookups failed
                                     if compound_obj is None:
-                                        record["antibiotic_name"] = ""
-                                        record["antibiotic_ontology_link"] = ""
+                                        new_record["antibiotic_name"] = ""
+                                        new_record["antibiotic_ontology_link"] = ""
                                     # Successful lookup
                                     else:
                                         antibiotic_name = compound_obj.get("label")
