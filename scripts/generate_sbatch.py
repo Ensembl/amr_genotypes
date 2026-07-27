@@ -74,6 +74,14 @@ def write_template(args, split_count: int):
     template = template.replace("{QUEUE}", args.queue)
     template = template.replace("{MEMORY}", args.memory)
     template = template.replace("{TOTAL_FILES}", f"{split_count-1:0>2}")
+    if args.use_container:
+        python_cmd = f"singularity run {args.use_container.absolute()} python3"
+    else:
+        python_cmd = "python3"
+    template = template.replace("{PYTHON_CMD}", python_cmd)
+    template = template.replace(
+        "{ANNOTATION_METADATA}", str(args.annotation_metadata.absolute())
+    )
     print(f"Writing new template to {args.output}")
     with open(args.output, "wt") as fh:
         fh.write(template)
@@ -133,6 +141,25 @@ def arg_parser():
         required=False,
         default="16G",
         help="Memory to reserve",
+    )
+    parser.add_argument(
+        "--use-container",
+        type=Path,
+        required=False,
+        default=None,
+        help="Path to a Singularity/Apptainer image. If given, the generated "
+        "sbatch script will run python3 via 'singularity run <path> python3' "
+        "instead of calling python3 directly",
+    )
+    parser.add_argument(
+        "--annotation-metadata",
+        type=Path,
+        required=True,
+        help="Path to a CSV mapping assembly accessions to the annotation "
+        "tool version and mode used to generate them. Passed through to "
+        "parse_amr.py's --annotation-metadata argument, which is mandatory: "
+        "every assembly processed must have an entry or the job will error out. "
+        "Expected header: assembly_ID,annotation_tool_version,annotation_tool_mode",
     )
     return parser
 

@@ -30,6 +30,7 @@ TYPE_MAP = {
     "date64": pa.date64(),
     "uuid": pa.uuid(),
     "binary": pa.binary(),
+    "decimal128": pa.decimal128(5, 2),
 }
 
 

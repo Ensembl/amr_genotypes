@@ -36,6 +36,7 @@ class Processor:
         gff_type: str = default_gff_filter,
         amrfinderplus_type: str = default_amr_filter,
         assembly: str = None,
+        annotation_metadata: Dict[str, Dict[str, str]] = None,
     ):
         if amrfinderplus_path is None:
             amrfinderplus_path = Processor.find_amrfinderplus_tsv(gff_path)
@@ -49,6 +50,7 @@ class Processor:
             amrfinderplus_path=amrfinderplus_path,
             amrfinderplus_type=amrfinderplus_type,
             assembly=assembly,
+            annotation_metadata=annotation_metadata,
         )
         return processor
 
@@ -70,6 +72,48 @@ class Processor:
             .replace(".gff", "")
         )
         return assembly
+
+    @staticmethod
+    def parse_annotation_metadata(path: str) -> Dict[str, Dict[str, str]]:
+        """Parse a CSV mapping assembly accessions to the annotation tool
+        version and mode used to generate them.
+
+        Expected CSV columns: assembly_ID, annotation_tool_version, annotation_tool_mode
+
+        Args:
+            path (str): Path to the annotation metadata CSV
+
+        Raises:
+            ValueError: If a row is missing a value for
+                'annotation_tool_version' or 'annotation_tool_mode'. These
+                fields are mandatory for every assembly listed in the file.
+
+        Returns:
+            Dict[str, Dict[str, str]]: A dict keyed by assembly_ID, with each
+            value a dict containing 'annotation_tool_version' and
+            'annotation_tool_mode'.
+        """
+        if not path or not os.path.exists(path):
+            raise ValueError(
+                f"An annotation metadata file is required but was not found: {path}"
+            )
+        records = {}
+        with open_file(path, mode="rt") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                assembly_id = row["assembly_ID"]
+                version = row.get("annotation_tool_version", "").strip()
+                mode = row.get("annotation_tool_mode", "").strip()
+                if not version or not mode:
+                    raise ValueError(
+                        f"Missing annotation_tool_version and/or annotation_tool_mode "
+                        f"for assembly {assembly_id} in {path}. Both fields are mandatory."
+                    )
+                records[assembly_id] = {
+                    "annotation_tool_version": version,
+                    "annotation_tool_mode": mode,
+                }
+        return records
 
     @staticmethod
     def find_amrfinderplus_tsv(gff_path: str):
@@ -117,6 +161,7 @@ class Processor:
         amrfinderplus_path: str = None,
         amrfinderplus_type: str = default_amr_filter,
         assembly: str = None,
+        annotation_metadata: Dict[str, Dict[str, str]] = None,
     ):
         """Initalise the processor module
 
@@ -130,6 +175,10 @@ class Processor:
             amrfinderplus_path (str, optional): Path to the AMRFinderPlus file. Defaults to None.
             amrfinderplus_type (str, optional): Type of AMR record to process. Defaults to "AMR".
             assembly (str, optional): Assembly to process. If not given we will attempt to decipher it from the given GFF filename. Defaults to None.
+            annotation_metadata (Dict[str, Dict[str, str]]): A dict keyed by
+                assembly accession, produced by Processor.parse_annotation_metadata(),
+                giving the 'annotation_tool_version' and 'annotation_tool_mode' used to
+                generate that assembly's annotation.
         """
         self.lookup = lookup
         self.local_antibiotic_lookup = local_antibiotic_lookup
@@ -139,6 +188,7 @@ class Processor:
         self.gff_type = gff_type
         self.amrfinderplus_path = amrfinderplus_path
         self.amrfinderplus_type = amrfinderplus_type
+        self.annotation_metadata = annotation_metadata
         if assembly:
             self.assembly = assembly
         else:
@@ -152,6 +202,13 @@ class Processor:
         amr_records = self.parse_amrfinderplus_tsv()
         output = []
         assembly_obj = self.lookup.assembly_summary(self.assembly)
+        if self.assembly not in self.annotation_metadata:
+            raise ValueError(
+                f"No annotation tool metadata found for assembly {self.assembly}. "
+                "annotation_tool_version and annotation_tool_mode are mandatory "
+                "for every genome; add an entry to the annotation metadata CSV."
+            )
+        annotation_meta = self.annotation_metadata[self.assembly]
         log.info(
             f"Filtering GFF types '{self.gff_type}' and AMRFinderPlus element types '{self.amrfinderplus_type}'"
         )
@@ -182,6 +239,12 @@ class Processor:
                             "region_end": int(location.end),
                             "strand": strand,
                             "_bin": bin,
+                            "annotation_tool_version": annotation_meta[
+                                "annotation_tool_version"
+                            ],
+                            "annotation_tool_mode": annotation_meta[
+                                "annotation_tool_mode"
+                            ],
                         }
                         for col in self.gff_fields:
                             gff_col = self.gff_conversion_field_names.get(col, col)
@@ -193,20 +256,25 @@ class Processor:
                             amr_records[feature.id] if feature.id in amr_records else {}
                         )
 
+                        record["amrfinderplus_method"] = amrfinder.get("Method", "NA")
+                        record["reference_accession"] = amrfinder.get("Closest_reference_accession", "NA")
+                        record["reference_name"] = amrfinder.get("Closest_reference_name", "NA")
+                        record["reference_sequence_coverage"] = amrfinder.get("%_Coverage_of_reference", "NA")
+                        record["reference_sequence_identity"] = amrfinder.get("%_Identity_to_reference", "NA")
+
                         if (
                             "HMM_accession" in amrfinder
                             and amrfinder["HMM_accession"] != "NA"
                         ):
-                            record["evidence_accession"] = amrfinder["HMM_accession"]
-                            record["evidence_type"] = "HMM"
+                            record["HMM_evidence_accession"] = amrfinder["HMM_accession"]
                             # Link needs to have version removed and trailing slash added
                             hmm_accession_clean = re.sub(
                                 r"\.\d+$", "/", amrfinder["HMM_accession"]
                             )
-                            record["evidence_link"] = (
+                            record["HMM_evidence_link"] = (
                                 f"{ncbi_evidence_link}{hmm_accession_clean}"
                             )
-                            record["evidence_description"] = amrfinder[
+                            record["HMM_evidence_description"] = amrfinder[
                                 "HMM_description"
                             ]
 
@@ -235,8 +303,8 @@ class Processor:
                                         )
                                     # Both lookups failed
                                     if compound_obj is None:
-                                        record["antibiotic_name"] = ""
-                                        record["antibiotic_ontology_link"] = ""
+                                        new_record["antibiotic_name"] = ""
+                                        new_record["antibiotic_ontology_link"] = ""
                                     # Successful lookup
                                     else:
                                         antibiotic_name = compound_obj.get("label")

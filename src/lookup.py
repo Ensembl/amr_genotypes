@@ -263,18 +263,39 @@ class Lookup:
             },
         )
         results = req.json().get("response", {}).get("docs", [])
+
+        if not results:
+            return None
+
+        antibiotic_lower = antibiotic.lower()
+        best = None
         for r in results:
-            res = {
-                "ontology": r["ontology_name"],
-                "id": r["obo_id"],
-                "label": r["label"],
-                "iri": r["iri"],
-                "short_form": r["short_form"],
-            }
-            url = f"https://www.ebi.ac.uk/ols4/ontologies/{ontology}/classes/{urllib.parse.quote_plus(r['iri'])}"
-            res["ontology_link"] = url
-            return res
-        return None
+            # Prefer an exact match on the label itself
+            if r["label"].lower() == antibiotic_lower:
+                best = r
+                break
+            # Next best: an exact match against one of the term's exact synonyms.
+            # This change prevents cases where an entry that mentions a drug in
+            # the free-text description is chosen over exact synonyms.
+            synonyms = [s.lower() for s in r.get("exact_synonyms", [])]
+            if best is None and antibiotic_lower in synonyms:
+                best = r
+
+        # Nothing matched exactly on label or synonym, so fall back to
+        # whatever OLS ranked first (its own relevance/BM25-style score)
+        if best is None:
+            best = results[0]
+
+        res = {
+            "ontology": best["ontology_name"],
+            "id": best["obo_id"],
+            "label": best["label"],
+            "iri": best["iri"],
+            "short_form": best["short_form"],
+        }
+        url = f"https://www.ebi.ac.uk/ols4/ontologies/{ontology}/classes/{urllib.parse.quote_plus(best['iri'])}"
+        res["ontology_link"] = url
+        return res
 
     def _safe_get(self, url, params=None, headers={}, retries=5, timeout=10):
         for i in range(retries):

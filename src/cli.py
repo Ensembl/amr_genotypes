@@ -58,6 +58,7 @@ class Cli:
                     amrfinderplus_path=amrfinderplus_path,
                     amrfinderplus_type=self.args.filter,
                     assembly=assembly,
+                    annotation_metadata=self.annotation_metadata,
                 )
 
                 try:
@@ -87,6 +88,10 @@ class Cli:
     @cached_property
     def local_antibiotic_lookup(self):
         return LocalAntibioticLookup(antibiotics_config)
+
+    @cached_property
+    def annotation_metadata(self):
+        return Processor.parse_annotation_metadata(self.args.annotation_metadata)
 
     def create_argument_parser(self):
         parser = ArgumentParser()
@@ -133,6 +138,16 @@ class Cli:
             "--filter",
             default=default_amr_filter,
             help="Filter AMRFinderPlus records by this element type",
+            type=str,
+        )
+        parser.add_argument(
+            "--annotation-metadata",
+            required=True,
+            help="Path to a CSV mapping assembly accessions to the annotation "
+            "tool version and mode used to generate them. Expected columns: "
+            "assembly_ID, annotation_tool_version, annotation_tool_mode. "
+            "Mandatory: every assembly being processed must have an entry, "
+            "or processing will error out.",
             type=str,
         )
         return parser

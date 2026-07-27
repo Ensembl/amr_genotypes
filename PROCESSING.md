@@ -71,6 +71,24 @@ To submit run
 sbatch $target_batch
 ```
 
+### Running inside a Singularity/Apptainer container
+
+If you'd rather run the parsing step inside a container instead of relying on the system's `python3` and dependencies, pass `--use-container` with a path to a Singularity/Apptainer image:
+
+```bash
+python3 ${AMR_SCRIPTS}/generate_sbatch.py \
+  --base-dir $workdir \
+  --email $email \
+  --to-process $target_files \
+  --output $target_batch \
+  --memory 16GB \
+  --previously-processed $previously_processed \
+  --use-container /path/to/amr_etl_pipeline.img
+```
+
+This generates an `sbatch` script that runs each job as `singularity run /path/to/amr_etl_pipeline.img python3 ...` instead of calling `python3` directly.
+
+
 ## Creating the parquet files
 
 To create the parquet files we merge the CSVs and then use pyarrow to convert. Using a schema ensures data integrity.
